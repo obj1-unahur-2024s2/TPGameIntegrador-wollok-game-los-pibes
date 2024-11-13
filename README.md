@@ -1,22 +1,23 @@
-# Nombre del juego (<- borrar y completar)
+# One Punch
 
 ## Equipo de desarrollo
 
-- Alguien
-- Persona
-- etc.
+Correa Dylan
+Arias Facundo
+Lucas 
 
 ## Capturas
 
 (agregar)
 
-## Reglas de Juego / Instrucciones
+## Reglas de Juego
 
-(Escribirlas)
+
+## Instrucciones 
 
 
 ## Otros
 
-- Curso/Facultad
-- Versión de wollok
-- Una vez terminado, no tenemos problemas en que el repositorio sea público / queremos manternerlo privado
+- Programacion con Objetos 1 / Universidad Nacional de Hurlingham
+- Hecho en el Wollok del Visual
+- Una vez terminado, no tenemos problemas en que el repositorio sea público 
