@@ -5,6 +5,7 @@
 Correa Dylan
 Arias Facundo
 Lucas 
+Deandrea Arturo Juan
 
 ## Capturas
 
