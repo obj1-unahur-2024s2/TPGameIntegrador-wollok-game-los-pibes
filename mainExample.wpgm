@@ -1,7 +1,0 @@
-import wollok.game.*
-
-import Boxeadores.*
-
-program PepitaGame {
-	juego.iniciar()
-}

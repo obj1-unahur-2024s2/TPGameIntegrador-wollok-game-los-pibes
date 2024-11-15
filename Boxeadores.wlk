@@ -3,14 +3,9 @@ import wollok.game.*
 class Boxeador{
     var vida = 100
     var imagenBoxeador
-
     method pegar(){
-
     }
-
 }
-
-
 object juego {
 	
 	method iniciar(){
@@ -28,24 +23,18 @@ object juego {
 		keyboard.c().onPressDo{boxeadorJugador.ataqueEspecial()}
 	}
 }
-
 object boxeadorJugador inherits Boxeador{
     var property position = game.at(9,0)
-
     method initialize(){
         imagenBoxeador = "jugadorBoxeador.JPG"
     }
     
     method image() = imagenBoxeador
-
     method ataque(){
         imagenBoxeador = "jugadorBoxeadorAtaque.JPG"
     }
     method cubrir(){
-
     }
     method ataqueEspecial(){
-
     }
 }
-
