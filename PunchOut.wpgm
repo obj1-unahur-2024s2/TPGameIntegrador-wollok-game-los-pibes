@@ -4,6 +4,6 @@ import juego.*
 import pantallas.*
 
 program PunchOut {
-	juego.iniciarMenu()
+	juego.iniciar()
 	game.start()
 }

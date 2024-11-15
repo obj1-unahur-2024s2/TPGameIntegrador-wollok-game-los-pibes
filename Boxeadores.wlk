@@ -3,9 +3,18 @@ import wollok.game.*
 class Boxeador{
     var vida = 100
     var imagenBoxeador
-    method pegar(){
+    var estado = quieto
+    
+    method cambiarEstado(unEstado){
+        estado = unEstado
+        imagenBoxeador = estado.imagenPara(self)
+    }
+
+    method recibirGolpe(){
+        vida = (vida - 10).max(0)
     }
 }
+
 object juego {
 	
 	method iniciar(){
@@ -18,23 +27,42 @@ object juego {
 	}
 	method personajes() {
 		game.addVisual(boxeadorJugador)
-		keyboard.z().onPressDo{boxeadorJugador.ataque()}
-		keyboard.x().onPressDo{boxeadorJugador.cubrir()}
-		keyboard.c().onPressDo{boxeadorJugador.ataqueEspecial()}
+		keyboard.z().onPressDo{boxeadorJugador.cambiarEstado(atacando)}
+		keyboard.x().onPressDo{boxeadorJugador.cambiarEstado(cubriendo)}
+		keyboard.c().onPressDo{boxeadorJugador.cambiarEstado(atacandoEspecial)}
 	}
 }
+
 object boxeadorJugador inherits Boxeador{
     var property position = game.at(9,0)
+    
     method initialize(){
-        imagenBoxeador = "jugadorBoxeador.JPG"
+        imagenBoxeador = self.imagenDeQuieto()
     }
     
     method image() = imagenBoxeador
-    method ataque(){
-        imagenBoxeador = "jugadorBoxeadorAtaque.JPG"
-    }
-    method cubrir(){
-    }
-    method ataqueEspecial(){
-    }
+
+    //Imagenes
+    method imagenDeAtaque() = "imagenes/boxeadorJugadorAtaque.JPG"
+    method imagenDeCobertura() = "imagenes/boxeadorJugadorCobertura.JPG"
+    method imagenDeQuieto() = "imagenes/boxeadorJugador.jpg"
+    method imagenDeAtaqueEspecial() = "imagenes/boxeadorJugadorAtaqueEspecial.JPG"
+}
+
+//Estados
+
+object quieto {
+  method imagenPara(boxeador) = boxeador.imagenDeQuieto()
+}
+
+object atacando {
+  method imagenPara(boxeador) = boxeador.imagenDeAtaque()
+}
+
+object atacandoEspecial {
+  method imagenPara(boxeador) = boxeador.imagenDeAtaqueEspecial()
+}
+
+object cubriendo {
+  method imagenPara(boxeador) = boxeador.imagenDeCobertura()
 }
