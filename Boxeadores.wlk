@@ -15,24 +15,6 @@ class Boxeador{
     }
 }
 
-object juego {
-	
-	method iniciar(){
-		game.boardGround("ring1.png")
-		game.height(19)
-		game.width(19)
-		game.title("Punch out")
-		self.personajes()		
-		game.start()
-	}
-	method personajes() {
-		game.addVisual(boxeadorJugador)
-		keyboard.z().onPressDo{boxeadorJugador.cambiarEstado(atacando)}
-		keyboard.x().onPressDo{boxeadorJugador.cambiarEstado(cubriendo)}
-		keyboard.c().onPressDo{boxeadorJugador.cambiarEstado(atacandoEspecial)}
-	}
-}
-
 object boxeadorJugador inherits Boxeador{
     var property position = game.at(9,0)
     
@@ -47,6 +29,15 @@ object boxeadorJugador inherits Boxeador{
     method imagenDeCobertura() = "imagenes/boxeadorJugadorCobertura.JPG"
     method imagenDeQuieto() = "imagenes/boxeadorJugador.jpg"
     method imagenDeAtaqueEspecial() = "imagenes/boxeadorJugadorAtaqueEspecial.JPG"
+}
+
+object rocky inherits Boxeador{
+
+  method
+}
+
+object tyson inherits Boxeador{
+
 }
 
 //Estados

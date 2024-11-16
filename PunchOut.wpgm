@@ -1,9 +1,8 @@
 import wollok.game.*
-import Boxeadores.*
+import boxeadores.*
 import juego.*
-import pantallas.*
 
 program PunchOut {
-	juego.iniciar()
+	juego.iniciarMenu()
 	game.start()
 }
