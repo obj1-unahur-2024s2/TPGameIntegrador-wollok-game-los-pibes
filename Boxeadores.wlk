@@ -1,9 +1,13 @@
 import wollok.game.*
+import juego.*
 
 class Boxeador{
     var vida = 100
     var imagenBoxeador
     var estado = quieto
+    var property rival
+
+    method image() = imagenBoxeador
     
     method cambiarEstado(unEstado){
         estado = unEstado
@@ -13,6 +17,17 @@ class Boxeador{
     method recibirGolpe(){
         vida = (vida - 10).max(0)
     }
+
+    method atacar(){
+      self.cambiarEstado(atacando)
+      estado.imagenPara(self)
+      if (rival.estado() != cubriendo) rival.recibirGolpe()
+      game.schedule(1000, { // el game.schedule(milliseconds, action) pienso que es mejor que el onTick, porque atacamos, y despues de 1 segundo volvemos a estar quietos
+        self.cambiarEstado(quieto)
+        estado.imagenPara(self)
+      })
+    }
+
 }
 
 object boxeadorJugador inherits Boxeador{
@@ -20,9 +35,8 @@ object boxeadorJugador inherits Boxeador{
     
     method initialize(){
         imagenBoxeador = self.imagenDeQuieto()
+        rival = "agregar rival aca"
     }
-    
-    method image() = imagenBoxeador
 
     //Imagenes
     method imagenDeAtaque() = "imagenes/boxeadorJugadorAtaque.JPG"
