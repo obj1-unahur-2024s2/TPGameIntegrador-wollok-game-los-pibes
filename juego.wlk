@@ -107,23 +107,45 @@ object imagenVictoria{
 }
 
 //Creación de niveles
-class Nivel{
-	var property boxeadorRival
-	var property ring
+class Nivel {
+    var property boxeadorRival
+    var property ring
 
-	method iniciarNivel(){
-		game.boardGround( ring) //al cargar el juego desde el nivel, se muestra el fondo correctamente, pero no se ve si se entra al nivel desde el menú (?)
-		game.addVisual(boxeadorRival)
-        self.jugador()
-	}
+    method iniciarNivel() {
+        game.boardGround(ring)
+        game.addVisual(boxeadorRival)
+        game.addVisual(boxeadorJugador)
 
-	method jugador() {
-		game.addVisual(boxeadorJugador)
-		keyboard.z().onPressDo{boxeadorJugador.cambiarEstado(atacando)}
-		keyboard.x().onPressDo{boxeadorJugador.cambiarEstado(cubriendo)}
-		keyboard.c().onPressDo{boxeadorJugador.cambiarEstado(atacandoEspecial)}
-	}
+        // Establecer rival del jugador
+        boxeadorJugador.rival(boxeadorRival)
+
+        // Asignar controles para atacar y cubrirse
+        keyboard.z().onPressDo {
+            boxeadorJugador.atacar()
+            self.verificarVida()
+        }
+        keyboard.c().onPressDo {
+            boxeadorJugador.atacarEspecial()
+            self.verificarVida()
+        }
+        keyboard.x().onPressDo {
+            boxeadorJugador.cambiarEstado(cubriendo)
+        }
+    }
+
+    // Método para verificar la vida de ambos boxeadores
+    method verificarVida() {
+        if (boxeadorRival.vida() == 0) {
+            game.removeVisual(boxeadorRival)
+            boxeadorJugador.cambiarEstado(victoria)
+			game.stop()
+        } else if (boxeadorJugador.vida() == 0) {
+            game.removeVisual(boxeadorJugador)
+			game.stop()
+        }
+    }
 }
+
 
 object nivel1 inherits Nivel{
     method initialize(){

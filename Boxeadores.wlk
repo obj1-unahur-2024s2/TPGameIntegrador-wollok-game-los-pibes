@@ -2,8 +2,8 @@ import wollok.game.*
 import juego.*
 
 class Boxeador{
-    var vida = 100
-    var estado = quieto
+    var property vida = 100
+    var property estado = quieto
     var property rival
 
     method image() =  self.tipo() + estado.nombre() + ".jpg" //la imagen se cambia sola según el estado
@@ -12,17 +12,29 @@ class Boxeador{
         estado = unEstado
     }
 
-    method recibirGolpe(){
-        vida = (vida - 10).max(0)
+   method recibirGolpe() {
+        vida = 0.max(vida-10)
     }
 
-    //revisar
-    method atacar(){
-      self.cambiarEstado(atacando)
-      if (rival.estado() != cubriendo) rival.recibirGolpe()
-      game.schedule(1000, {self.cambiarEstado(quieto)})
+    method recibirGolpeEspecial() {
+        vida = 0.max(vida-20)
     }
 
+    method atacar() {
+        self.cambiarEstado(atacando)
+        if (rival.estado() != cubriendo){
+           rival.recibirGolpe() 
+        }
+        game.schedule(1000, { self.cambiarEstado(quieto) })
+    }
+
+    method atacarEspecial() {
+        self.cambiarEstado(atacandoEspecial)
+        if (rival.estado() != cubriendo){
+           rival.recibirGolpeEspecial() 
+        }
+        game.schedule(1000, { self.cambiarEstado(quieto) })
+    }
     method tipo()
 }
 
@@ -30,7 +42,7 @@ object boxeadorJugador inherits Boxeador{
     var property position = game.at(9,0)
     
     method initialize(){
-        rival = "agregar rival aca" //el rival actual podría ser asignado al jugador por el nivel, así cambia en cada uno
+        rival = "" //el rival actual podría ser asignado al jugador por el nivel, así cambia en cada uno
     }
 
     override method tipo() = "boxeadorJugador"
@@ -73,24 +85,6 @@ object atacandoEspecial {
 object cubriendo {
   method nombre() = "Cubriendo"
 }
-
-//Objeto para hacer pruebas hasta que funcione el sistema de niveles
-object juegoDePrueba {
-	
-	method iniciar(){
-		game.boardGround("ring1.jpg")
-		game.height(19)
-		game.width(19)
-		game.title("Punch out")
-
-		self.personajes()		
-		game.start()
-	}
-
-	method personajes() {
-		game.addVisual(boxeadorJugador)
-		keyboard.z().onPressDo{boxeadorJugador.cambiarEstado(atacando)}
-		keyboard.x().onPressDo{boxeadorJugador.cambiarEstado(cubriendo)}
-		keyboard.c().onPressDo{boxeadorJugador.cambiarEstado(atacandoEspecial)}
-	}
+object victoria {
+  method nombre() = "Victoria"
 }
