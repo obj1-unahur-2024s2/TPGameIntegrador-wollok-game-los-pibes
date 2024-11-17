@@ -60,7 +60,7 @@ object juego{
 
     //Musica a sonar en sus respectivas pantallas
 
-	method musicaMenu(){	
+	method musicaPelea(){	
 		const musicaMenu = game.sound("musica/01 Punch Out!! Theme.mp3")
         musicaMenu.shouldLoop(true)
 		musicaMenu.play()
