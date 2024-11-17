@@ -1,5 +1,5 @@
 import wollok.game.*
-import boxeadores.*
+import Boxeadores.*
 import juego.*
 
 program PunchOut {

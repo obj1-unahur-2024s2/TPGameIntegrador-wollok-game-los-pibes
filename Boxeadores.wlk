@@ -3,71 +3,94 @@ import juego.*
 
 class Boxeador{
     var vida = 100
-    var imagenBoxeador
     var estado = quieto
     var property rival
 
-    method image() = imagenBoxeador
-    
+    method image() = "imagenes/" + self.tipo() + estado.nombre() + ".jpg" //la imagen se cambia sola según el estado
+
     method cambiarEstado(unEstado){
         estado = unEstado
-        imagenBoxeador = estado.imagenPara(self)
     }
 
     method recibirGolpe(){
         vida = (vida - 10).max(0)
     }
 
+    //revisar
     method atacar(){
       self.cambiarEstado(atacando)
-      estado.imagenPara(self)
       if (rival.estado() != cubriendo) rival.recibirGolpe()
-      game.schedule(1000, { // el game.schedule(milliseconds, action) pienso que es mejor que el onTick, porque atacamos, y despues de 1 segundo volvemos a estar quietos
-        self.cambiarEstado(quieto)
-        estado.imagenPara(self)
-      })
+      game.schedule(1000, {self.cambiarEstado(quieto)})
     }
 
+    method tipo()
 }
 
 object boxeadorJugador inherits Boxeador{
     var property position = game.at(9,0)
     
     method initialize(){
-        imagenBoxeador = self.imagenDeQuieto()
-        rival = "agregar rival aca"
+        rival = "agregar rival aca" //el rival actual podría ser asignado al jugador por el nivel, así cambia en cada uno
     }
 
-    //Imagenes
-    method imagenDeAtaque() = "imagenes/boxeadorJugadorAtaque.JPG"
-    method imagenDeCobertura() = "imagenes/boxeadorJugadorCobertura.JPG"
-    method imagenDeQuieto() = "imagenes/boxeadorJugador.jpg"
-    method imagenDeAtaqueEspecial() = "imagenes/boxeadorJugadorAtaqueEspecial.JPG"
+    override method tipo() = "boxeadorJugador"
 }
 
 object rocky inherits Boxeador{
+    var property position = game.at(9,7)
 
-  method
+    method initialize(){
+        rival = boxeadorJugador
+    }
+
+    override method tipo() = "rocky"
 }
 
 object tyson inherits Boxeador{
+    var property position = game.at(9,7)
 
+    method initialize(){
+        rival = boxeadorJugador
+    }
+
+    override method tipo() = "tyson"
 }
 
 //Estados
 
 object quieto {
-  method imagenPara(boxeador) = boxeador.imagenDeQuieto()
+  method nombre() = "Quieto"
 }
 
 object atacando {
-  method imagenPara(boxeador) = boxeador.imagenDeAtaque()
+  method nombre() = "Atacando"
 }
 
 object atacandoEspecial {
-  method imagenPara(boxeador) = boxeador.imagenDeAtaqueEspecial()
+  method nombre() = "AtacandoEspecial"
 }
 
 object cubriendo {
-  method imagenPara(boxeador) = boxeador.imagenDeCobertura()
+  method nombre() = "Cubriendo"
+}
+
+//Objeto para hacer pruebas hasta que funcione el sistema de niveles
+object juegoDePrueba {
+	
+	method iniciar(){
+		game.boardGround("imagenes/ring1.png")
+		game.height(19)
+		game.width(19)
+		game.title("Punch out")
+
+		self.personajes()		
+		game.start()
+	}
+
+	method personajes() {
+		game.addVisual(boxeadorJugador)
+		keyboard.z().onPressDo{boxeadorJugador.cambiarEstado(atacando)}
+		keyboard.x().onPressDo{boxeadorJugador.cambiarEstado(cubriendo)}
+		keyboard.c().onPressDo{boxeadorJugador.cambiarEstado(atacandoEspecial)}
+	}
 }
