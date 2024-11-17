@@ -2,19 +2,18 @@ import wollok.game.*
 import Boxeadores.*
 
 object juego{
+	var juegoIniciado = false
 
-	var property nivel = 0
-	var property juegoIniciado = false
-
-// pantalla del menu donde tocamos enter para pasar a elegir el nivel
+    //Pantalla del menu donde tocamos enter para pasar a elegir el nivel
 
 	method iniciarMenu(){
 		self.presentacionMenu()
+
 		keyboard.enter().onPressDo {
-			if(not self.juegoIniciado()){
+			if(not juegoIniciado){
 				game.removeVisual(imagenMenu)
 				self.pantallaDificultad()
-				self.juegoIniciado(true)
+				juegoIniciado = true
 			}
 		}
 	}
@@ -26,14 +25,16 @@ object juego{
 		game.addVisual(imagenMenu)
 	}
 
-//elegimos nivel
+    //Elegimos nivel
 
 	method pantallaDificultad(){
 		game.addVisual(imagenDificultad)
+
 		keyboard.num1().onPressDo {
 			game.removeVisual(imagenDificultad)
 			nivel1.iniciarNivel()
 		}
+
 		keyboard.num2().onPressDo {
 			game.removeVisual(imagenDificultad)
 			nivel2.iniciarNivel()
@@ -41,27 +42,29 @@ object juego{
 	}
 	
 
-// pantallas al terminar partida
+    //Pantallas al terminar partida
 
 	method pantallaVictoria(){
 		game.clear()
 		self.musicaVictoria()
 		game.addVisual(imagenVictoria)
-		self.juegoIniciado(false)
+		juegoIniciado = false
 	}
 	
 	method pantallaDerrota(){
 		game.clear()
 		self.musicaDerrota()
 		game.addVisual(imagenDerrota)
-		self.juegoIniciado(false)
+		juegoIniciado = false
 	}
-// musica a sonar en sus respectivas pantallas
 
-	method musicaMenu(){	
+    //Musica a sonar en sus respectivas pantallas
+
+	method musicaPelea(){	
 		const musicaMenu = game.sound("musica/01 Punch Out!! Theme.mp3")
-			musicaMenu.play()
-			musicaMenu.volume(0.5)
+        musicaMenu.shouldLoop(true)
+		musicaMenu.play()
+		musicaMenu.volume(0.5)
 	}
 	
 	method musicaVictoria(){	
@@ -75,11 +78,10 @@ object juego{
 			musicaPerdiste.play()
 			musicaPerdiste.volume(0.5)
 	}
-
-	
-	
 }
+
 // imagenes que vamos a mostrar en cada pantalla
+    //***no es mejor manejar los fondos con game.boardGround() en vez de crear objetos por cada una?***
 object imagenMenu{
 	var property position = game.at(0,0)
 	var property image = 'imagenes/imagenMenu.jpg'
@@ -88,7 +90,7 @@ object imagenMenu{
 
 object imagenDificultad{
 	var property position = game.at(0,0)
-	var property image = 'imagenes/imagenMenu.jpg'
+	var property image = 'imagenes/imagenMenuDificultad.jpg'
 
 }
 
@@ -103,20 +105,19 @@ object imagenVictoria{
 	var property image = 'imagenes/imagenMenu.jpg'
 
 }
-// clase para crear los niveles
+
+//Creación de niveles
 class Nivel{
-	var property boxeador
+	var property boxeadorRival
+	var property ring
 
 	method iniciarNivel(){
-		self.iniciar()
-		game.addVisual(boxeador)
+		game.boardGround("imagenes/" + ring + ".png") //al cargar el juego desde el nivel, se muestra el fondo correctamente, pero no se ve si se entra al nivel desde el menú (?)
+		game.addVisual(boxeadorRival)
+        self.jugador()
 	}
 
-	method iniciar(){
-		game.boardGround("ring1.png")
-		self.personajes()		
-	}
-	method personajes() {
+	method jugador() {
 		game.addVisual(boxeadorJugador)
 		keyboard.z().onPressDo{boxeadorJugador.cambiarEstado(atacando)}
 		keyboard.x().onPressDo{boxeadorJugador.cambiarEstado(cubriendo)}
@@ -124,5 +125,16 @@ class Nivel{
 	}
 }
 
-const nivel1 = new Nivel(boxeador = rocky)
-const nivel2 = new Nivel(boxeador = tyson)
+object nivel1 inherits Nivel{
+    method initialize(){
+        boxeadorRival = rocky
+        ring  = "ring1"
+    }
+}
+
+object nivel2 inherits Nivel{
+    method initialize(){
+        boxeadorRival = tyson
+        ring  = "ring1" //cambiar a otro tipo para cada nivel
+    }
+}

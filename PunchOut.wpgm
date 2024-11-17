@@ -2,7 +2,7 @@ import wollok.game.*
 import Boxeadores.*
 import juego.*
 
-program punchOut{
+program PunchOut {
 	juego.iniciarMenu()
 	game.start()
 }
