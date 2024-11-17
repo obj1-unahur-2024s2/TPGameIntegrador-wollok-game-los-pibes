@@ -6,7 +6,7 @@ class Boxeador{
     var estado = quieto
     var property rival
 
-    method image() = "imagenes/" + self.tipo() + estado.nombre() + ".jpg" //la imagen se cambia sola según el estado
+    method image() =  self.tipo() + estado.nombre() + ".jpg" //la imagen se cambia sola según el estado
 
     method cambiarEstado(unEstado){
         estado = unEstado
@@ -78,7 +78,7 @@ object cubriendo {
 object juegoDePrueba {
 	
 	method iniciar(){
-		game.boardGround("imagenes/ring1.png")
+		game.boardGround("ring1.jpg")
 		game.height(19)
 		game.width(19)
 		game.title("Punch out")

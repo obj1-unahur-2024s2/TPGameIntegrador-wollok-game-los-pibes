@@ -84,25 +84,25 @@ object juego{
     //***no es mejor manejar los fondos con game.boardGround() en vez de crear objetos por cada una?***
 object imagenMenu{
 	var property position = game.at(0,0)
-	var property image = 'imagenes/imagenMenu.jpg'
+	var property image = 'imagenMenu.jpg'
 
 }
 
 object imagenDificultad{
 	var property position = game.at(0,0)
-	var property image = 'imagenes/imagenMenuDificultad.jpg'
+	var property image = 'imagenMenuDificultad.jpg'
 
 }
 
 object imagenDerrota{
 	var property position = game.at(0,0)
-	var property image = 'imagenes/imagenMenu.jpg'
+	var property image = 'imagenMenu.jpg'
 
 }
 
 object imagenVictoria{
 	var property position = game.at(0,0)
-	var property image = 'imagenes/imagenMenu.jpg'
+	var property image = 'imagenMenu.jpg'
 
 }
 
@@ -112,7 +112,7 @@ class Nivel{
 	var property ring
 
 	method iniciarNivel(){
-		game.boardGround("imagenes/" + ring + ".png") //al cargar el juego desde el nivel, se muestra el fondo correctamente, pero no se ve si se entra al nivel desde el menú (?)
+		game.boardGround( ring) //al cargar el juego desde el nivel, se muestra el fondo correctamente, pero no se ve si se entra al nivel desde el menú (?)
 		game.addVisual(boxeadorRival)
         self.jugador()
 	}
@@ -128,13 +128,13 @@ class Nivel{
 object nivel1 inherits Nivel{
     method initialize(){
         boxeadorRival = rocky
-        ring  = "ring1"
+        ring  = "ring1.jpg"
     }
 }
 
 object nivel2 inherits Nivel{
     method initialize(){
         boxeadorRival = tyson
-        ring  = "ring1" //cambiar a otro tipo para cada nivel
+        ring  = "ring1.jpg" //cambiar a otro tipo para cada nivel
     }
 }
