@@ -151,11 +151,11 @@ class Nivel {
         if (boxeadorRival.vida() == 0) {
             game.removeVisual(boxeadorRival)
             boxeadorJugador.cambiarEstado(victoria)
-            game.schedule(1000, {game.stop()})
+            game.stop()
         } else if (boxeadorJugador.vida() == 0) {
             game.removeVisual(boxeadorJugador)
 			boxeadorRival.cambiarEstado(victoria)
-            game.schedule(1000, {game.stop()})
+            game.stop()
         }
     }
 }
