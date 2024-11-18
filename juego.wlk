@@ -9,10 +9,11 @@ object juego{
 	method iniciarMenu(){
 		self.presentacionMenu()
         reproducir.musicaMenu()
-		keyboard.enter().onPressDo {
+		keyboard.enter().onPressDo {   
+            reproducir.pararLaMusica()
+            reproducir.musicaEnter()
 			if(not juegoIniciado){
 				game.removeVisual(imagenMenu)
-                reproducir.pararLaMusica()
 				self.pantallaDificultad()
 				juegoIniciado = true
 			}
@@ -33,19 +34,25 @@ object juego{
 
 	method pantallaDificultad(){
 		game.addVisual(imagenDificultad)
+        reproducir.musicaDificultad()
+        
+
 		keyboard.num1().onPressDo {
+            reproducir.pararLaMusica()
 			game.removeVisual(imagenDificultad)
-			nivel1.iniciarNivel()
+			nivel1.iniciarNivel()        
 		}
 
 		keyboard.num2().onPressDo {
+            reproducir.pararLaMusica()
 			game.removeVisual(imagenDificultad)
-			nivel2.iniciarNivel()
+			nivel2.iniciarNivel()        
 		}
 
         keyboard.num3().onPressDo {
+            reproducir.pararLaMusica()
 			game.removeVisual(imagenDificultad)
-			nivel3.iniciarNivel()
+			nivel3.iniciarNivel()     
 		}
 	}
 	
@@ -79,6 +86,15 @@ object reproducir{
     method musicaMenu() {
         game.schedule(500, {menu.play() menu.shouldLoop(true)})
         }
+    method musicaEnter() {
+        menu = game.sound("21 (se) Punching Title Name.mp3")
+        menu.play()
+        }
+    method musicaDificultad() {
+        menu = game.sound("18 Warming Up with Doc.mp3")
+        game.schedule(1300, {menu.play() menu.shouldLoop(true)})
+        menu.volume(0.4)
+        }     
     method musicaPelea() {
         menu = game.sound("10 Match BGM.mp3")
         game.schedule(500, {menu.play() menu.shouldLoop(true)})
