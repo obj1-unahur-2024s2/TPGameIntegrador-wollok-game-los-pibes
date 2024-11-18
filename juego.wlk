@@ -83,7 +83,7 @@ object reproducir{
     method musicaDerrota() {derrota.play()}
 
     method sonidoGolpe() {golpe.play()}
-    method pararMusica() {
+    method pararLaMusica() {
       menu.stop()
     }
 }
