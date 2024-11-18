@@ -54,14 +54,14 @@ object juego{
 
 	method pantallaVictoria(){
 		game.clear()
-		reproducirMusica.victoria()
+		reproducir.musicaVictoria()
 		game.addVisual(imagenVictoria)
 		juegoIniciado = false
 	}
 	
 	method pantallaDerrota(){
 		game.clear()
-		reproducirMusica.derrota()
+		reproducir.musicaDerrota()
 		game.addVisual(imagenDerrota)
 		juegoIniciado = false
 	}
@@ -137,6 +137,13 @@ class Nivel {
         keyboard.x().onPressDo {
             boxeadorJugador.cambiarEstado(cubriendo)
         }
+
+        // Iniciar comportamiento del rival
+        self.ataqueDelRival()
+    }
+
+    method ataqueDelRival() {
+        // Este método está pensado para ser sobrescrito en cada nivel
     }
 
     // Método para verificar la vida de ambos boxeadores
@@ -144,32 +151,88 @@ class Nivel {
         if (boxeadorRival.vida() == 0) {
             game.removeVisual(boxeadorRival)
             boxeadorJugador.cambiarEstado(victoria)
-			game.stop()
+            game.schedule(1000, {game.stop()})
         } else if (boxeadorJugador.vida() == 0) {
             game.removeVisual(boxeadorJugador)
-			game.stop()
+			boxeadorRival.cambiarEstado(victoria)
+            game.schedule(1000, {game.stop()})
         }
     }
 }
 
 
-object nivel1 inherits Nivel{
-    method initialize(){
+
+
+object nivel1 inherits Nivel {
+    method initialize() {
         boxeadorRival = joe
-        ring  = "ring1.png"
+        ring = "ring1.png"
+    }
+
+    override method ataqueDelRival() {
+        game.schedule(1000, {
+            if (boxeadorRival.vida() > 0 && boxeadorJugador.vida() > 0) {
+                if (talvez.seaCierto(30)) { // 30% de probabilidad de atacar
+                    boxeadorRival.atacar()
+                }
+                self.verificarVida()
+                self.ataqueDelRival() // Volver a llamar para repetir
+            }
+        })
     }
 }
 
-object nivel2 inherits Nivel{
-    method initialize(){
+
+
+object nivel2 inherits Nivel {
+    method initialize() {
         boxeadorRival = rocky
-        ring  = "ring2.png"
+        ring = "ring2.png"
+    }
+
+    override method ataqueDelRival() {
+        game.schedule(1000, {
+            if (boxeadorRival.vida() > 0 && boxeadorJugador.vida() > 0) {
+                if (talvez.seaCierto(35)) { // 20% de probabilidad de atacar
+                    boxeadorRival.atacar()
+                }
+                if (talvez.seaCierto(10)) { // 10% de probabilidad de cubrirse
+                    boxeadorRival.cambiarEstado(cubriendo)
+                }
+                self.verificarVida()
+                self.ataqueDelRival() // Volver a llamar para repetir
+            }
+        })
     }
 }
 
-object nivel3 inherits Nivel{
-    method initialize(){
+
+object nivel3 inherits Nivel {
+    method initialize() {
         boxeadorRival = tyson
-        ring  = "ring3.png" 
+        ring = "ring3.png"
     }
+
+    override method ataqueDelRival() {
+        game.schedule(1000, {
+            if (boxeadorRival.vida() > 0 && boxeadorJugador.vida() > 0) {
+                if (talvez.seaCierto(40)) { // 30% de probabilidad de atacar
+                    boxeadorRival.atacar()
+                }
+                if (talvez.seaCierto(15)) { // 15% de probabilidad de cubrirse
+                    boxeadorRival.cambiarEstado(cubriendo)
+                }
+                if (talvez.seaCierto(20)) { // 20% de probabilidad de ataque especial
+                    boxeadorRival.atacarEspecial()
+                }
+                self.verificarVida()
+                self.ataqueDelRival() // Volver a llamar para repetir
+            }
+        })
+    }
+}
+
+
+object talvez {
+    method seaCierto(porcentaje) = 0.randomUpTo(1) * 100 < porcentaje
 }
