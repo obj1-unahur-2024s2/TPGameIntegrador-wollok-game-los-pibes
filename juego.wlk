@@ -111,7 +111,7 @@ object imagenDerrota{
 
 object imagenVictoria{
 	var property position = game.at(0,0)
-	var property image = 'pantallaVictoria.png'
+	var property image = './pantallaVictoria.png'
 
 }
 
@@ -121,7 +121,7 @@ class Nivel {
     var property ring
 
     method iniciarNivel() {
-        game.boardGround(ring)
+        game.addVisual(ring)
         game.addVisual(boxeadorRival)
         game.addVisual(boxeadorJugador)
 
@@ -154,10 +154,13 @@ class Nivel {
         if (boxeadorRival.vida() == 0) {
             game.removeVisual(boxeadorRival)
             boxeadorJugador.cambiarEstado(victoria)
+            juego.pantallaVictoria()
             game.stop()
+            
         } else if (boxeadorJugador.vida() == 0) {
             game.removeVisual(boxeadorJugador)
 			boxeadorRival.cambiarEstado(victoria)
+            juego.pantallaDerrota()
             game.stop()
         }
     }
@@ -169,7 +172,7 @@ class Nivel {
 object nivel1 inherits Nivel {
     method initialize() {
         boxeadorRival = joe
-        ring = "ring1.png"
+        ring = ring1
     }
 
     override method ataqueDelRival() {
@@ -190,7 +193,7 @@ object nivel1 inherits Nivel {
 object nivel2 inherits Nivel {
     method initialize() {
         boxeadorRival = rocky
-        ring = "ring2.png"
+        ring = ring2
     }
 
     override method ataqueDelRival() {
@@ -213,7 +216,7 @@ object nivel2 inherits Nivel {
 object nivel3 inherits Nivel {
     method initialize() {
         boxeadorRival = tyson
-        ring = "ring3.png"
+        ring = ring3
     }
 
     override method ataqueDelRival() {
@@ -238,4 +241,17 @@ object nivel3 inherits Nivel {
 
 object talvez {
     method seaCierto(porcentaje) = 0.randomUpTo(1) * 100 < porcentaje
+}
+
+object ring1 {
+  var property position = game.at(0, 0)
+    var property image = 'ring1.png'
+}
+object ring2 {
+    var property position = game.at(0, 0)
+    var property image = 'ring2.png'
+}
+object ring3 {
+    var property position = game.at(0, 0)
+    var property image = 'ring3.png'
 }
