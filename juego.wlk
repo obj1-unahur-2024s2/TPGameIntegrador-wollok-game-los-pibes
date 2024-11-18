@@ -8,10 +8,11 @@ object juego{
 
 	method iniciarMenu(){
 		self.presentacionMenu()
-
+        reproducir.musicaMenu()
 		keyboard.enter().onPressDo {
 			if(not juegoIniciado){
 				game.removeVisual(imagenMenu)
+                reproducir.pararMusica()
 				self.pantallaDificultad()
 				juegoIniciado = true
 			}
@@ -69,19 +70,22 @@ object juego{
 
 //Músicas
 object reproducir{
-    const menu = game.sound("musica/01 Punch Out!! Theme.mp3")
-    const pelea = game.sound("musica/10 Match BGM.mp3")
-    const victoria = game.sound("musica/14 Bout Winner.mp3")
-    const derrota = game.sound("musica/12 You Lose.mp3")
+    const menu = game.sound("01 Punch Out!! Theme.mp3")
+    const pelea = game.sound("10 Match BGM.mp3")
+    const victoria = game.sound("14 Bout Winner.mp3")
+    const derrota = game.sound("12 You Lose.mp3")
     
-    const golpe = game.sound("musica/28 (se) Punching Opponent.mp3")
+    const golpe = game.sound("m28 (se) Punching Opponent.mp3")
     
-    method musicaMenu() {menu.play() menu.shouldLoop(true)}
-    method musicaPelea() {pelea.play() pelea.shouldLoop(true)}
-    method musicaVictoria() {victoria.play() }
-    method musicaDerrota() {derrota.play() }
+    method musicaMenu() {game.schedule(500, {menu.play() menu.shouldLoop(true)})}
+    method musicaPelea() {pelea.play() menu.shouldLoop(true)}
+    method musicaVictoria() {victoria.play()}
+    method musicaDerrota() {derrota.play()}
 
-    method sonidoGolpe() {golpe.play() }
+    method sonidoGolpe() {golpe.play()}
+    method pararMusica() {
+      menu.stop()
+    }
 }
 
 // imagenes que vamos a mostrar en cada pantalla
@@ -120,7 +124,6 @@ class Nivel {
         game.boardGround(ring)
         game.addVisual(boxeadorRival)
         game.addVisual(boxeadorJugador)
-        reproducir.musicaPelea()
 
         // Establecer rival del jugador
         boxeadorJugador.rival(boxeadorRival)
