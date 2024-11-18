@@ -12,7 +12,7 @@ object juego{
 		keyboard.enter().onPressDo {
 			if(not juegoIniciado){
 				game.removeVisual(imagenMenu)
-                reproducir.pararMusica()
+                reproducir.pararLaMusica()
 				self.pantallaDificultad()
 				juegoIniciado = true
 			}
@@ -33,7 +33,6 @@ object juego{
 
 	method pantallaDificultad(){
 		game.addVisual(imagenDificultad)
-
 		keyboard.num1().onPressDo {
 			game.removeVisual(imagenDificultad)
 			nivel1.iniciarNivel()
@@ -55,6 +54,7 @@ object juego{
 
 	method pantallaVictoria(){
 		game.clear()
+        reproducir.pararLaMusica()
 		reproducir.musicaVictoria()
 		game.addVisual(imagenVictoria)
 		juegoIniciado = false
@@ -62,6 +62,7 @@ object juego{
 	
 	method pantallaDerrota(){
 		game.clear()
+        reproducir.pararLaMusica()
 		reproducir.musicaDerrota()
 		game.addVisual(imagenDerrota)
 		juegoIniciado = false
@@ -70,17 +71,26 @@ object juego{
 
 //Músicas
 object reproducir{
-    const menu = game.sound("01 Punch Out!! Theme.mp3")
-    const pelea = game.sound("10 Match BGM.mp3")
-    const victoria = game.sound("14 Bout Winner.mp3")
-    const derrota = game.sound("12 You Lose.mp3")
+    var menu = game.sound("01 Punch Out!! Theme.mp3")
+    
     
     const golpe = game.sound("m28 (se) Punching Opponent.mp3")
     
-    method musicaMenu() {game.schedule(500, {menu.play() menu.shouldLoop(true)})}
-    method musicaPelea() {pelea.play() menu.shouldLoop(true)}
-    method musicaVictoria() {victoria.play()}
-    method musicaDerrota() {derrota.play()}
+    method musicaMenu() {
+        game.schedule(500, {menu.play() menu.shouldLoop(true)})
+        }
+    method musicaPelea() {
+        menu = game.sound("10 Match BGM.mp3")
+        game.schedule(500, {menu.play() menu.shouldLoop(true)})
+        }
+    method musicaVictoria() {
+        menu = game.sound("14 Bout Winner.mp3")
+        game.schedule(500, {menu.play()})
+        }
+    method musicaDerrota() {
+        menu = game.sound("12 You Lose.mp3")
+        game.schedule(500, {menu.play()})
+        }
 
     method sonidoGolpe() {golpe.play()}
     method pararLaMusica() {
@@ -111,7 +121,7 @@ object imagenDerrota{
 
 object imagenVictoria{
 	var property position = game.at(0,0)
-	var property image = './pantallaVictoria.png'
+	var property image = 'pantallaVictoria.png'
 
 }
 
@@ -124,12 +134,13 @@ class Nivel {
         game.addVisual(ring)
         game.addVisual(boxeadorRival)
         game.addVisual(boxeadorJugador)
+        reproducir.musicaPelea()
 
         // Establecer rival del jugador
         boxeadorJugador.rival(boxeadorRival)
 
         // Asignar controles para atacar y cubrirse
-        keyboard.z().onPressDo {
+        keyboard.z().onPressDo {     
             boxeadorJugador.atacar()
             self.verificarVida()
         }
