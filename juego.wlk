@@ -101,29 +101,28 @@ object reproducir{
 // imagenes que vamos a mostrar en cada pantalla
     //***¿No es mejor manejar los fondos con game.boardGround() en vez de crear objetos por cada una?***
 
-object imagenMenu{
-	var property position = game.at(0,0)
-	var property image = 'imagenMenu.png'
-
+class Imagen {
+  var property tipo = ""
+    var property position = game.at(0, 0)
+    var property image = "imagen" + self.tipo() + ".png" 
 }
 
-object imagenDificultad{
-	var property position = game.at(0,0)
-	var property image = 'imagenMenuDificultad.png'
-
+object imagenMenu inherits Imagen{
+	override method tipo() = "Menu"
 }
 
-object imagenDerrota{
-	var property position = game.at(0,0)
-	var property image = 'pantallaDerrota.png'
-
+object imagenDificultad inherits Imagen{
+	override method tipo() = "MenuDificultad"
 }
 
-object imagenVictoria{
-	var property position = game.at(0,0)
-	var property image = 'pantallaVictoria.png'
-
+object imagenDerrota inherits Imagen{
+	override method tipo() = "PantallaDerrota"
 }
+
+object imagenVictoria inherits Imagen{
+    override method tipo() = "PantallaVictoria"
+}
+
 
 //Creación de niveles
 class Nivel {
@@ -254,15 +253,19 @@ object talvez {
     method seaCierto(porcentaje) = 0.randomUpTo(1) * 100 < porcentaje
 }
 
-object ring1 {
-  var property position = game.at(0, 0)
-    var property image = 'ring1.png'
-}
-object ring2 {
+class Ring{
+    var property valor = 0
     var property position = game.at(0, 0)
-    var property image = 'ring2.png'
+    var property image = "ring" + self.valor() + ".png"  
 }
-object ring3 {
-    var property position = game.at(0, 0)
-    var property image = 'ring3.png'
+
+object ring1 inherits Ring {
+  override method valor() = "1"
 }
+object ring2 inherits Ring {
+    override method valor() = "2"
+}
+object ring3 inherits Ring {
+    override method valor() = "3"
+}
+
