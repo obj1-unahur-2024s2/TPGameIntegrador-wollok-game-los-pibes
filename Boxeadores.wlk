@@ -6,7 +6,7 @@ class Boxeador{
     var property estado = quieto
     var property rival
 
-    method image() =  self.tipo() + estado.nombre() + ".jpg" //la imagen se cambia sola según el estado
+    method image() =  self.tipo() + estado.nombre() + ".png" //la imagen se cambia sola según el estado
 
     method cambiarEstado(unEstado){
         estado = unEstado
@@ -39,7 +39,7 @@ class Boxeador{
 }
 
 object boxeadorJugador inherits Boxeador{
-    var property position = game.at(9,0)
+    var property position = game.at(6,0)
     
     method initialize(){
         rival = "" //el rival actual podría ser asignado al jugador por el nivel, así cambia en cada uno
@@ -48,23 +48,21 @@ object boxeadorJugador inherits Boxeador{
     override method tipo() = "boxeadorJugador"
 }
 
-object rocky inherits Boxeador{
-    var property position = game.at(9,7)
+class Oponente inherits Boxeador{
+    var property position = game.at(6,5)
 
     method initialize(){
         rival = boxeadorJugador
     }
-
+}
+object joe inherits Oponente{
+    override method tipo() = "joe"
+}
+object rocky inherits Oponente{
     override method tipo() = "rocky"
 }
 
-object tyson inherits Boxeador{
-    var property position = game.at(9,7)
-
-    method initialize(){
-        rival = boxeadorJugador
-    }
-
+object tyson inherits Oponente{
     override method tipo() = "tyson"
 }
 

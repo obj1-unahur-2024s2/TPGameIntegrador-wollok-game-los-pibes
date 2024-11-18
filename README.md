@@ -3,6 +3,7 @@
 ## Equipo de desarrollo
 
 Correa Dylan
+Hermida Leonardo Daniel
 Arias Facundo
 Lucas 
 Deandrea Arturo Juan

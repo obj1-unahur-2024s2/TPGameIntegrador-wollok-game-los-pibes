@@ -20,8 +20,11 @@ object juego{
 
 	method presentacionMenu(){
 		game.title("Punch Out")
+        game.cellSize(16)
+
 		game.height(15)
-		game.width(18)
+		game.width(16)
+
 		game.addVisual(imagenMenu)
 	}
 
@@ -39,6 +42,11 @@ object juego{
 			game.removeVisual(imagenDificultad)
 			nivel2.iniciarNivel()
 		}
+
+        keyboard.num3().onPressDo {
+			game.removeVisual(imagenDificultad)
+			nivel3.iniciarNivel()
+		}
 	}
 	
 
@@ -46,63 +54,60 @@ object juego{
 
 	method pantallaVictoria(){
 		game.clear()
-		self.musicaVictoria()
+		reproducirMusica.victoria()
 		game.addVisual(imagenVictoria)
 		juegoIniciado = false
 	}
 	
 	method pantallaDerrota(){
 		game.clear()
-		self.musicaDerrota()
+		reproducirMusica.derrota()
 		game.addVisual(imagenDerrota)
 		juegoIniciado = false
 	}
+}
 
-    //Musica a sonar en sus respectivas pantallas
+//Músicas
+object reproducir{
+    const menu = game.sound("musica/01 Punch Out!! Theme.mp3")
+    const pelea = game.sound("musica/10 Match BGM.mp3")
+    const victoria = game.sound("musica/14 Bout Winner.mp3")
+    const derrota = game.sound("musica/12 You Lose.mp3")
+    
+    const golpe = game.sound("musica/28 (se) Punching Opponent.mp3")
+    
+    method musicaMenu() {menu.play() menu.shouldLoop(true)}
+    method musicaPelea() {pelea.play() pelea.shouldLoop(true)}
+    method musicaVictoria() {victoria.play() }
+    method musicaDerrota() {derrota.play() }
 
-	method musicaPelea(){	
-		const musicaMenu = game.sound("musica/01 Punch Out!! Theme.mp3")
-        musicaMenu.shouldLoop(true)
-		musicaMenu.play()
-		musicaMenu.volume(0.5)
-	}
-	
-	method musicaVictoria(){	
-		const musicaGanaste = game.sound("musica/14 Bout Winner.mp3")
-			musicaGanaste.play()
-			musicaGanaste.volume(0.5)
-	}
-	
-	method musicaDerrota(){
-		const musicaPerdiste = game.sound("musica/12 You Lose.mp3")
-			musicaPerdiste.play()
-			musicaPerdiste.volume(0.5)
-	}
+    method sonidoGolpe() {golpe.play() }
 }
 
 // imagenes que vamos a mostrar en cada pantalla
-    //***no es mejor manejar los fondos con game.boardGround() en vez de crear objetos por cada una?***
+    //***¿No es mejor manejar los fondos con game.boardGround() en vez de crear objetos por cada una?***
+
 object imagenMenu{
 	var property position = game.at(0,0)
-	var property image = 'imagenMenu.jpg'
+	var property image = 'imagenMenu.png'
 
 }
 
 object imagenDificultad{
 	var property position = game.at(0,0)
-	var property image = 'imagenMenuDificultad.jpg'
+	var property image = 'imagenMenuDificultad.png'
 
 }
 
 object imagenDerrota{
 	var property position = game.at(0,0)
-	var property image = 'imagenMenu.jpg'
+	var property image = 'pantallaDerrota.png'
 
 }
 
 object imagenVictoria{
 	var property position = game.at(0,0)
-	var property image = 'imagenMenu.jpg'
+	var property image = 'pantallaVictoria.png'
 
 }
 
@@ -115,6 +120,7 @@ class Nivel {
         game.boardGround(ring)
         game.addVisual(boxeadorRival)
         game.addVisual(boxeadorJugador)
+        reproducir.musicaPelea()
 
         // Establecer rival del jugador
         boxeadorJugador.rival(boxeadorRival)
@@ -149,14 +155,21 @@ class Nivel {
 
 object nivel1 inherits Nivel{
     method initialize(){
-        boxeadorRival = rocky
-        ring  = "ring1.jpg"
+        boxeadorRival = joe
+        ring  = "ring1.png"
     }
 }
 
 object nivel2 inherits Nivel{
     method initialize(){
+        boxeadorRival = rocky
+        ring  = "ring2.png"
+    }
+}
+
+object nivel3 inherits Nivel{
+    method initialize(){
         boxeadorRival = tyson
-        ring  = "ring1.jpg" //cambiar a otro tipo para cada nivel
+        ring  = "ring3.png" 
     }
 }
