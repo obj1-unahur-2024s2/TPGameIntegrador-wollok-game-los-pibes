@@ -3,6 +3,7 @@ import Boxeadores.*
 
 object juego{
 	var juegoIniciado = false
+    var property partidaFinalizada = false
 
     //Pantalla del menu donde tocamos enter para pasar a elegir el nivel
 
@@ -118,6 +119,7 @@ object reproducir{
         }
 
     method sonidoGolpe() {golpe.play()}
+
     method pararLaMusica() {
       menu.stop()
     }
@@ -151,6 +153,12 @@ object pantallaRing inherits Imagen{
     override method image() = "ring" + self.tipo() + ".png"
 }
 
+//Textos con las vidas
+/*object vidaDelJugador{
+    method position() = game.at(2,10)
+    method text() = boxeadorJugador.vida()
+}*/
+
 
 //Creación de niveles
 class Nivel {
@@ -161,6 +169,7 @@ class Nivel {
         game.addVisual(pantallaRing)
         game.addVisual(boxeadorRival)
         game.addVisual(boxeadorJugador)
+        game.addVisual(vidaDelJugador)
         reproducir.musicaPelea()
 
         // Establecer rival del jugador
@@ -170,16 +179,18 @@ class Nivel {
         self.iniciarIARival()
 
         // Asignar controles para atacar y cubrirse
-        keyboard.z().onPressDo {     
-            boxeadorJugador.atacar()
-            self.verificarVida()
-        }
-        keyboard.c().onPressDo {
-            boxeadorJugador.atacarEspecial()
-            self.verificarVida()
-        }
-        keyboard.x().onPressDo {
-            boxeadorJugador.cubrirse()
+        if(!juego.partidaFinalizada()){
+            keyboard.z().onPressDo {     
+                boxeadorJugador.atacar()
+                self.verificarVida()
+            }
+            keyboard.c().onPressDo {
+                boxeadorJugador.atacarEspecial()
+                self.verificarVida()
+            }
+            keyboard.x().onPressDo {
+                boxeadorJugador.cubrirse()
+            }
         }
     }
 
@@ -201,49 +212,59 @@ class Nivel {
         if (boxeadorRival.vida() <= 0) { 
             boxeadorJugador.estado(victoria)
             boxeadorRival.estado(derrota)
-            game.schedule(1000,
+            juego.partidaFinalizada(true)
+
+            game.schedule(5000,
                {juego.pantallaVictoria()
-                game.schedule(5000,{game.stop()})}
+                game.schedule(8000,{game.stop()})}
             )
             
         } else if (boxeadorJugador.vida() <= 0) {
 			boxeadorRival.estado(victoria)
             boxeadorJugador.estado(derrota)
-            game.schedule(1000,
+            juego.partidaFinalizada(true)
+
+            game.schedule(5000,
                 {juego.pantallaDerrota()
-                game.schedule(5000,{game.stop()})}
+                game.schedule(8000,{game.stop()})}
             )           
         }
     }
 }
 
-
-
-
 object nivel1 inherits Nivel {
     method initialize() {
         boxeadorRival = joe
-        pantallaRing.tipo(1)
-
         accionesRival.add(new AccionAtacar(probabilidad=30))
+    }
+
+    override method iniciarNivel(){
+        super()
+        pantallaRing.tipo(1)
     }
 }
 
 object nivel2 inherits Nivel {
     method initialize() {
         boxeadorRival = rocky
-        pantallaRing.tipo(2)
-
         accionesRival.addAll([new AccionAtacar(probabilidad=35), new AccionCubrirse(probabilidad=10)])
+    }
+
+    override method iniciarNivel(){
+        super()
+        pantallaRing.tipo(2)
     }
 }
 
 object nivel3 inherits Nivel {
     method initialize() {
         boxeadorRival = tyson
-        pantallaRing.tipo(3)
-
         accionesRival.addAll([new AccionAtacar(probabilidad=40), new AccionCubrirse(probabilidad=15), new AccionAtacarEspecial(probabilidad=20)])
+    }
+
+    override method iniciarNivel(){
+        super()
+        pantallaRing.tipo(3)
     }
 }
 
@@ -257,7 +278,7 @@ class AccionRival {
 
     method ejecutar(boxeadorRival)
 
-    method esEjecutable() = talvez.seaCierto(probabilidad)
+    method esEjecutable() = talvez.seaCierto(probabilidad) && juego.partidaFinalizada(false)
 }
 
 class AccionAtacar inherits AccionRival {

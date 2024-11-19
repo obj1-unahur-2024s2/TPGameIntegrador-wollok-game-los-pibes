@@ -10,12 +10,15 @@ class Boxeador{
 
    method recibirGolpe() {
         vida = 0.max(vida-10)
-        self.descansar()
+        self.estado(golpeado)
+        game.schedule(1500, { self.descansar() })
     }
 
     method recibirGolpeEspecial() {
         vida = 0.max(vida-20)
         self.descansar()
+        self.estado(golpeado)
+        game.schedule(1500, { self.descansar() })
     }
 
     method estaProtegido() = estado.protege()
@@ -56,7 +59,7 @@ object boxeadorJugador inherits Boxeador{
     var property position = game.at(6,0)
     
     method initialize(){
-        rival = "" //el rival actual podría ser asignado al jugador por el nivel, así cambia en cada uno
+        rival = "" //el rival actual es asignado al jugador por el nivel, así cambia en cada uno
     }
 
     override method tipo() = "boxeadorJugador"
@@ -94,13 +97,19 @@ object atacando {
 
 object atacandoEspecial {
   method nombre() = "AtacandoEspecial"
-  method protege() = true
+  method protege() = false
 }
 
 object cubriendo {
   method nombre() = "Cubriendo"
   method protege() = true
 }
+
+object golpeado {
+  method nombre() = "Golpeado"
+  method protege() = true
+}
+
 object victoria {
   method nombre() = "Victoria"
   method protege() = true
@@ -108,5 +117,5 @@ object victoria {
 
 object derrota{
     method nombre() = "Derrota"
-    method protege() = false
+    method protege() = true
 }
