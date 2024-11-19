@@ -29,9 +29,13 @@ Derrota a Joe, Rocky o Tyson para convertirte en el nuevo campeón mundial
 
 ## Instrucciones 
 Comenzar partida: Enter
+
 Elegir Nivel: 1,2,3
+
 Ataque: Z
+
 Cubrir: X
+
 Ataque Especial: C
 
 ## Otros
