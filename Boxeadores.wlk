@@ -96,7 +96,7 @@ object atacando {
 
 object atacandoEspecial {
   method nombre() = "AtacandoEspecial"
-  method protege() = true
+  method protege() = false
 }
 
 object cubriendo {
@@ -115,5 +115,5 @@ object victoria {
 
 object derrota{
     method nombre() = "Derrota"
-    method protege() = false
+    method protege() = true
 }

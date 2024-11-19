@@ -151,6 +151,19 @@ object pantallaRing inherits Imagen{
     override method image() = "ring" + self.tipo() + ".png"
 }
 
+//Vidas
+
+object vidaJugador {
+  method position() = game.at(2, 13)
+  method image() = "vida" + boxeadorJugador.vida() + ".png"
+}
+
+object vidaOponente {
+    var property oponente = joe
+    method position() = game.at(13, 13)
+    method image() = "vida" + self.oponente().vida() + ".png"
+}
+
 
 //Creación de niveles
 class Nivel {
@@ -161,6 +174,13 @@ class Nivel {
         game.addVisual(pantallaRing)
         game.addVisual(boxeadorRival)
         game.addVisual(boxeadorJugador)
+
+        game.addVisual(vidaJugador)
+
+        vidaOponente.oponente(boxeadorRival)
+        game.addVisual(vidaOponente)
+
+
         reproducir.musicaPelea()
 
         // Establecer rival del jugador
