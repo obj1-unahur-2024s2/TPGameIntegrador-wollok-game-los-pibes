@@ -1,45 +1,46 @@
 # Wollok's Punch-Out!!
 
+## Descripción
+Derrota a Joe, Rocky y Tyson para convertirte en el nuevo campeón mundial
+
 ## Equipo de desarrollo
 
-Correa Dylan
-
-Hermida Leonardo Daniel
-
-Arias Facundo
-
-Barrionuevo Lucas Emmanuel
-
-Cáceres Edgardo Ramón
-
-Deandrea Arturo Juan
+- Correa, Dylan
+- Hermida, Leonardo Daniel
+- Arias, Facundo Roberto
+- Barrionuevo, Lucas Emmanuel
+- Deandrea, Arturo Juan
+- Cáceres, Edgardo Ramón
 
 ## Capturas
 
-![imagenMenu](https://github.com/user-attachments/assets/c3313cdb-c50b-4b21-ac00-3dfb77efae97)![imagenMenuDificultad](https://github.com/user-attachments/assets/fe9def10-cd29-42f9-bafb-93ce7608fabd)![imagenPantallaDerrota](https://github.com/user-attachments/assets/34aed361-9d89-4905-80b4-178f12b63915)![imagenPantallaVictoria](https://github.com/user-attachments/assets/565ce6dc-49f1-4ac8-8d4a-e649fa15f4e9)![ring1](https://github.com/user-attachments/assets/148f019d-d720-4eca-a0a9-5d5898ad1cef)
-![ring2](https://github.com/user-attachments/assets/5cc286c7-aabe-466e-9d6c-ada8154188c9)![ring3](https://github.com/user-attachments/assets/fe661b88-1737-4b5d-85d2-d75976117436)
-
-
+![imagenMenu](/assets/imagenMenu.png)
+![imagenMenuDificultad](/assets/imagenMenuDificultad.png)
+![imagenPantallaDerrota](/assets/imagenPantallaDerrota.png)
+![imagenPantallaVictoria](/assets/imagenPantallaVictoria.png)
+![ring1](/assets/ring1.png)
+![ring2](/assets/ring2.png)
+![ring3](/assets/ring3.png)
 
 
 
 
 ## Reglas de Juego
-Derrota a Joe, Rocky o Tyson para convertirte en el nuevo campeón mundial
+El juego consiste en golpear a tu oponente hasta que caiga rendido cuando su vida llegue a 0. Tanto el jugador como los contrincantes pueden dar un golpe normal, uno especial y cubrirse para protegerse.
 
 ## Instrucciones 
 Comenzar partida: Enter
 
-Elegir Nivel: 1,2,3
+Elegir nivel: 1, 2, 3
 
-Ataque: Z
+Golpear: Z
 
-Cubrir: X
+Cubrirse: X
 
-Ataque Especial: C
+Golpe especial: C
 
 ## Otros
 
 - Programacion con Objetos 1 / Universidad Nacional de Hurlingham
-- Hecho en el Wollok del Visual
+- Hecho en Wollok con Visual Studio Code
 - Una vez terminado, no tenemos problemas en que el repositorio sea público 

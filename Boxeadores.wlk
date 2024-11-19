@@ -10,12 +10,14 @@ class Boxeador{
 
    method recibirGolpe() {
         vida = 0.max(vida-10)
-        self.descansar()
+        self.estado(golpeado)
+        game.schedule(1500, { self.descansar() })
     }
 
     method recibirGolpeEspecial() {
         vida = 0.max(vida-20)
-        self.descansar()
+        self.estado(golpeado)
+        game.schedule(1500, { self.descansar() })
     }
 
     method estaProtegido() = estado.protege()
@@ -99,6 +101,11 @@ object atacandoEspecial {
 
 object cubriendo {
   method nombre() = "Cubriendo"
+  method protege() = true
+}
+
+object golpeado {
+  method nombre() = "Golpeado"
   method protege() = true
 }
 object victoria {

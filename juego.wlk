@@ -217,33 +217,39 @@ class Nivel {
     }
 }
 
-
-
-
 object nivel1 inherits Nivel {
     method initialize() {
         boxeadorRival = joe
-        pantallaRing.tipo(1)
-
         accionesRival.add(new AccionAtacar(probabilidad=30))
+    }
+
+    override method iniciarNivel(){
+        super()
+        pantallaRing.tipo(1)
     }
 }
 
 object nivel2 inherits Nivel {
     method initialize() {
         boxeadorRival = rocky
-        pantallaRing.tipo(2)
-
         accionesRival.addAll([new AccionAtacar(probabilidad=35), new AccionCubrirse(probabilidad=10)])
+    }
+
+    override method iniciarNivel(){
+        super()
+        pantallaRing.tipo(2)
     }
 }
 
 object nivel3 inherits Nivel {
     method initialize() {
         boxeadorRival = tyson
-        pantallaRing.tipo(3)
-
         accionesRival.addAll([new AccionAtacar(probabilidad=40), new AccionCubrirse(probabilidad=15), new AccionAtacarEspecial(probabilidad=20)])
+    }
+
+    override method iniciarNivel(){
+        super()
+        pantallaRing.tipo(3)
     }
 }
 
