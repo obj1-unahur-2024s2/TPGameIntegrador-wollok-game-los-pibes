@@ -71,7 +71,6 @@ object juego{
     //Pantallas al terminar partida
 
 	method pantallaVictoria(){
-		game.clear()
         reproducir.pararLaMusica()
 		reproducir.musicaVictoria()
 		game.addVisual(imagenVictoria)
@@ -79,7 +78,6 @@ object juego{
 	}
 	
 	method pantallaDerrota(){
-		game.clear()
         reproducir.pararLaMusica()
 		reproducir.musicaDerrota()
 		game.addVisual(imagenDerrota)
@@ -200,17 +198,21 @@ class Nivel {
 
     // Método para verificar la vida de ambos boxeadores
     method verificarVida() {
-        if (boxeadorRival.vida() <= 0) {
-            game.removeVisual(boxeadorRival)
+        if (boxeadorRival.vida() <= 0) { 
             boxeadorJugador.estado(victoria)
-            juego.pantallaVictoria()
-            game.stop()
+            boxeadorRival.estado(derrota)
+            game.schedule(1000,
+               {juego.pantallaVictoria()
+                game.schedule(5000,{game.stop()})}
+            )
             
         } else if (boxeadorJugador.vida() <= 0) {
-            game.removeVisual(boxeadorJugador)
 			boxeadorRival.estado(victoria)
-            juego.pantallaDerrota()
-            game.stop()
+            boxeadorJugador.estado(derrota)
+            game.schedule(1000,
+                {juego.pantallaDerrota()
+                game.schedule(5000,{game.stop()})}
+            )           
         }
     }
 }

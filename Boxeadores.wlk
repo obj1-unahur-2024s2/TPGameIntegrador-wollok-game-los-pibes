@@ -23,7 +23,7 @@ class Boxeador{
     method atacar() {
         self.estado(atacando)
 
-        if (rival.estaProtegido()){
+        if (not rival.estaProtegido()){
            rival.recibirGolpe() 
         }
 
@@ -33,7 +33,7 @@ class Boxeador{
     method atacarEspecial() {
         self.estado(atacandoEspecial)
 
-        if (rival.estaProtegido()){
+        if (not rival.estaProtegido()){
            rival.recibirGolpeEspecial() 
         }
 
@@ -104,4 +104,9 @@ object cubriendo {
 object victoria {
   method nombre() = "Victoria"
   method protege() = true
+}
+
+object derrota{
+    method nombre() = "Derrota"
+    method protege() = false
 }
