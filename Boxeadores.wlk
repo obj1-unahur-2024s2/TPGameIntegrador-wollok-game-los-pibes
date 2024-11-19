@@ -8,33 +8,47 @@ class Boxeador{
 
     method image() =  self.tipo() + estado.nombre() + ".png" //la imagen se cambia sola según el estado
 
-    method cambiarEstado(unEstado){
-        estado = unEstado
-    }
-
    method recibirGolpe() {
         vida = 0.max(vida-10)
+        self.descansar()
     }
 
     method recibirGolpeEspecial() {
         vida = 0.max(vida-20)
+        self.descansar()
     }
 
+    method estaProtegido() = estado.protege()
+
     method atacar() {
-        self.cambiarEstado(atacando)
-        if (rival.estado() != cubriendo){
+        self.estado(atacando)
+
+        if (rival.estaProtegido()){
            rival.recibirGolpe() 
         }
-        game.schedule(1000, { self.cambiarEstado(quieto) })
+
+        game.schedule(1000, { self.descansar() })
     }
 
     method atacarEspecial() {
-        self.cambiarEstado(atacandoEspecial)
-        if (rival.estado() != cubriendo){
+        self.estado(atacandoEspecial)
+
+        if (rival.estaProtegido()){
            rival.recibirGolpeEspecial() 
         }
-        game.schedule(1000, { self.cambiarEstado(quieto) })
+
+        game.schedule(1000, { self.descansar() })
     }
+
+    method cubrirse() {
+        self.estado(cubriendo)
+        game.schedule(3000, { self.descansar() })
+    }
+
+    method descansar() {
+        estado = quieto
+    }
+
     method tipo()
 }
 
@@ -70,19 +84,24 @@ object tyson inherits Oponente{
 
 object quieto {
   method nombre() = "Quieto"
+  method protege() = false
 }
 
 object atacando {
   method nombre() = "Atacando"
+  method protege() = false
 }
 
 object atacandoEspecial {
   method nombre() = "AtacandoEspecial"
+  method protege() = true
 }
 
 object cubriendo {
   method nombre() = "Cubriendo"
+  method protege() = true
 }
 object victoria {
   method nombre() = "Victoria"
+  method protege() = true
 }

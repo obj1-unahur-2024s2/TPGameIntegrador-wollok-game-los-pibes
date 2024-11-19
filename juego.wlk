@@ -12,8 +12,8 @@ object juego{
 		keyboard.enter().onPressDo {   
             reproducir.pararLaMusica()
             reproducir.musicaEnter()
-            game.schedule(1000, 
-                {if(not juegoIniciado){
+            game.schedule(1000, {
+                if(not juegoIniciado){
                     game.removeVisual(imagenMenu)
                     self.pantallaDificultad()
                     juegoIniciado = true
@@ -125,45 +125,51 @@ object reproducir{
     }
 }
 
-// imagenes que vamos a mostrar en cada pantalla
-    //***¿No es mejor manejar los fondos con game.boardGround() en vez de crear objetos por cada una?***
+// Imagenes normalizadas para elegir los fondos
 
 class Imagen {
-  var property tipo = ""
+    var property tipo = ""
     var property position = game.at(0, 0)
-    var property image = "imagen" + self.tipo() + ".png" 
+    method image() = "imagen" + self.tipo() + ".png" 
 }
 
-object imagenMenu inherits Imagen{
-	override method tipo() = "Menu"
+object imagenMenu inherits Imagen{ 
+    method initialize() {tipo = "Menu"}
 }
 
 object imagenDificultad inherits Imagen{
-	override method tipo() = "MenuDificultad"
+	method initialize() {tipo = "MenuDificultad"}
 }
 
 object imagenDerrota inherits Imagen{
-	override method tipo() = "PantallaDerrota"
+	method initialize() {tipo = "PantallaDerrota"}
 }
 
 object imagenVictoria inherits Imagen{
-    override method tipo() = "PantallaVictoria"
+    method initialize() {tipo = "PantallaVictoria"}
+}
+
+object pantallaRing inherits Imagen{
+    override method image() = "ring" + self.tipo() + ".png"
 }
 
 
 //Creación de niveles
 class Nivel {
     var property boxeadorRival
-    var property ring
+    const accionesRival = []
 
     method iniciarNivel() {
-        game.addVisual(ring)
+        game.addVisual(pantallaRing)
         game.addVisual(boxeadorRival)
         game.addVisual(boxeadorJugador)
         reproducir.musicaPelea()
 
         // Establecer rival del jugador
         boxeadorJugador.rival(boxeadorRival)
+
+        //Inicia la IA del rival
+        self.iniciarIARival()
 
         // Asignar controles para atacar y cubrirse
         keyboard.z().onPressDo {     
@@ -175,28 +181,34 @@ class Nivel {
             self.verificarVida()
         }
         keyboard.x().onPressDo {
-            boxeadorJugador.cambiarEstado(cubriendo)
+            boxeadorJugador.cubrirse()
         }
-
-        // Iniciar comportamiento del rival
-        self.ataqueDelRival()
     }
 
-    method ataqueDelRival() {
-        // Este método está pensado para ser sobrescrito en cada nivel
+    method iniciarIARival() {
+        game.onTick(1000, "iaRival", {
+            if (boxeadorRival.vida() > 0 && boxeadorJugador.vida() > 0) {
+                self.decidirAccionDelRival()
+                self.verificarVida() //¿fuera?
+            }
+        })
+    }
+
+    method decidirAccionDelRival(){
+        accionesRival.findOrDefault({a => a.esEjecutable()}, accionDescansar).ejecutar(boxeadorRival)
     }
 
     // Método para verificar la vida de ambos boxeadores
     method verificarVida() {
-        if (boxeadorRival.vida() == 0) {
+        if (boxeadorRival.vida() <= 0) {
             game.removeVisual(boxeadorRival)
-            boxeadorJugador.cambiarEstado(victoria)
+            boxeadorJugador.estado(victoria)
             juego.pantallaVictoria()
             game.stop()
             
-        } else if (boxeadorJugador.vida() == 0) {
+        } else if (boxeadorJugador.vida() <= 0) {
             game.removeVisual(boxeadorJugador)
-			boxeadorRival.cambiarEstado(victoria)
+			boxeadorRival.estado(victoria)
             juego.pantallaDerrota()
             game.stop()
         }
@@ -209,90 +221,67 @@ class Nivel {
 object nivel1 inherits Nivel {
     method initialize() {
         boxeadorRival = joe
-        ring = ring1
-    }
+        pantallaRing.tipo(1)
 
-    override method ataqueDelRival() {
-        game.schedule(1000, {
-            if (boxeadorRival.vida() > 0 && boxeadorJugador.vida() > 0) {
-                if (talvez.seaCierto(30)) { // 30% de probabilidad de atacar
-                    boxeadorRival.atacar()
-                }
-                self.verificarVida()
-                self.ataqueDelRival() // Volver a llamar para repetir
-            }
-        })
+        accionesRival.add(new AccionAtacar(probabilidad=30))
     }
 }
-
-
 
 object nivel2 inherits Nivel {
     method initialize() {
         boxeadorRival = rocky
-        ring = ring2
-    }
+        pantallaRing.tipo(2)
 
-    override method ataqueDelRival() {
-        game.schedule(1000, {
-            if (boxeadorRival.vida() > 0 && boxeadorJugador.vida() > 0) {
-                if (talvez.seaCierto(35)) { // 20% de probabilidad de atacar
-                    boxeadorRival.atacar()
-                }
-                if (talvez.seaCierto(10)) { // 10% de probabilidad de cubrirse
-                    boxeadorRival.cambiarEstado(cubriendo)
-                }
-                self.verificarVida()
-                self.ataqueDelRival() // Volver a llamar para repetir
-            }
-        })
+        accionesRival.addAll([new AccionAtacar(probabilidad=35), new AccionCubrirse(probabilidad=10)])
     }
 }
-
 
 object nivel3 inherits Nivel {
     method initialize() {
         boxeadorRival = tyson
-        ring = ring3
-    }
+        pantallaRing.tipo(3)
 
-    override method ataqueDelRival() {
-        game.schedule(1000, {
-            if (boxeadorRival.vida() > 0 && boxeadorJugador.vida() > 0) {
-                if (talvez.seaCierto(40)) { // 30% de probabilidad de atacar
-                    boxeadorRival.atacar()
-                }
-                if (talvez.seaCierto(15)) { // 15% de probabilidad de cubrirse
-                    boxeadorRival.cambiarEstado(cubriendo)
-                }
-                if (talvez.seaCierto(20)) { // 20% de probabilidad de ataque especial
-                    boxeadorRival.atacarEspecial()
-                }
-                self.verificarVida()
-                self.ataqueDelRival() // Volver a llamar para repetir
-            }
-        })
+        accionesRival.addAll([new AccionAtacar(probabilidad=40), new AccionCubrirse(probabilidad=15), new AccionAtacarEspecial(probabilidad=20)])
     }
 }
-
 
 object talvez {
     method seaCierto(porcentaje) = 0.randomUpTo(1) * 100 < porcentaje
 }
 
-class Ring{
-    var property valor = 0
-    var property position = game.at(0, 0)
-    var property image = "ring" + self.valor() + ".png"  
+//Acciones del rival para la IA
+class AccionRival {
+    var probabilidad
+
+    method ejecutar(boxeadorRival)
+
+    method esEjecutable() = talvez.seaCierto(probabilidad)
 }
 
-object ring1 inherits Ring {
-  override method valor() = "1"
-}
-object ring2 inherits Ring {
-    override method valor() = "2"
-}
-object ring3 inherits Ring {
-    override method valor() = "3"
+class AccionAtacar inherits AccionRival {
+    override method ejecutar(boxeadorRival) {
+        boxeadorRival.atacar()
+    }
 }
 
+class AccionCubrirse inherits AccionRival {
+    override method ejecutar(boxeadorRival) {
+        boxeadorRival.cubrirse()
+    }
+}
+
+class AccionAtacarEspecial inherits AccionRival {
+    override method ejecutar(boxeadorRival) {
+        boxeadorRival.atacarEspecial()
+    }
+}
+
+object accionDescansar inherits AccionRival {
+    method initialize(){
+        probabilidad = 100
+    }
+
+    override method ejecutar(boxeadorRival) {
+        boxeadorRival.descansar()
+    }
+}
