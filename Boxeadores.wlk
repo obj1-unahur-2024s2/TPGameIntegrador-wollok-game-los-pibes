@@ -65,7 +65,7 @@ object boxeadorJugador inherits Boxeador{
 }
 
 class Oponente inherits Boxeador{
-    var property position = game.at(6,5)
+    var property position = game.at(6,4)
 
     method initialize(){
         rival = boxeadorJugador
