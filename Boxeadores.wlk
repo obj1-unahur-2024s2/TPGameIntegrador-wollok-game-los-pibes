@@ -51,6 +51,11 @@ class Boxeador{
         estado = quieto
     }
 
+    method reiniciar(){
+        vida = 100
+        estado = quieto
+    }
+
     method tipo()
 }
 
