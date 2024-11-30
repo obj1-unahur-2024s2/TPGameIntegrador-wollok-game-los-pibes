@@ -2,8 +2,15 @@ import wollok.game.*
 import Boxeadores.*
 import pantallas.*
 import juego.*
+import imagenYSonido.*
 
 program PunchOut {
 	juego.iniciar()
 	game.start()
+    //Mostrar variables en consola
+
+    /*game.onTick(1000, "prueba", {
+        console.println("")
+        }
+    )*/
 }

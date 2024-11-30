@@ -1,6 +1,6 @@
 import juego.*
 import Boxeadores.*
-
+import imagenYSonido.*
 //Pantallas
 class Pantalla {
     var property tipo = ""
@@ -8,15 +8,28 @@ class Pantalla {
     method ocultar() {game.removeVisual(self) game.removeVisual(tipo)}
 }
 
+object pantallaCarga inherits Pantalla {
+    method initialize() {tipo = imagenCarga}
+    override method mostrar() {
+        game.addVisual(tipo)
+
+        keyboard.enter().onPressDo {
+            if(gestorPantallas.pantallaActual() != self) {self.error("") }
+            gestorPantallas.mostrarPantalla(pantallaMenu)
+        }
+    }
+}
+
 object pantallaMenu inherits Pantalla {
     method initialize() {tipo = imagenMenu}
     override method mostrar() {
         game.addVisual(tipo)
-        reproducir.musicaMenu()
+        gestorSonidos.musicaMenu()
+
+        //Controles de pantalla
         keyboard.enter().onPressDo {
-            if(gestorPantallas.pantallaActual() != self) {self.error("No se puede usar esa tecla en esta pantalla") }
-            reproducir.pararLaMusica()
-            reproducir.musicaEnter()
+            if(gestorPantallas.pantallaActual() != self) {self.error("") }
+            gestorSonidos.sonidoEnter()
             game.schedule(1000, {
                 gestorPantallas.mostrarPantalla(pantallaDificultad)
             })
@@ -26,36 +39,40 @@ object pantallaMenu inherits Pantalla {
 
 object pantallaDificultad inherits Pantalla {
     var nivelElegido = null
+    var cargandoNivel = false
 
     method initialize() {tipo = imagenDificultad}
 
-    override method mostrar() {
-        game.addVisual(tipo)
-        reproducir.musicaDificultad()
-
-        keyboard.num1().onPressDo {
-            if(gestorPantallas.pantallaActual() != self) {self.error("No se puede usar esa tecla en esta pantalla") }
-            nivelElegido = nivel1
-            self.cargarNivel()
-        }
-        keyboard.num2().onPressDo {
-            if(gestorPantallas.pantallaActual() != self) {self.error("No se puede usar esa tecla en esta pantalla") }
-            nivelElegido = nivel2
-            self.cargarNivel()
-        }
-        keyboard.num3().onPressDo {
-            if(gestorPantallas.pantallaActual() != self) {self.error("No se puede usar esa tecla en esta pantalla") }
-            nivelElegido = nivel3
-            self.cargarNivel()
-        }
-    }
-
     method cargarNivel() {
-        reproducir.pararLaMusica()
-        reproducir.musicaEnter()
+        gestorSonidos.sonidoEnter()
         game.schedule(1000, {
             pantallaNivel.tipoNivel(nivelElegido)
             gestorPantallas.mostrarPantalla(pantallaNivel)
+            cargandoNivel = false
+        })
+    }
+    override method mostrar() {
+        game.addVisual(tipo)
+        gestorSonidos.musicaDificultad()
+
+        //Controles de pantalla
+        keyboard.num1().onPressDo ({
+            if(gestorPantallas.pantallaActual() != self || cargandoNivel) {self.error("") }
+            nivelElegido = nivel1
+            cargandoNivel = true
+            self.cargarNivel()
+        })
+        keyboard.num2().onPressDo ({
+            if(gestorPantallas.pantallaActual() != self || cargandoNivel) {self.error("") }
+            nivelElegido = nivel2
+            cargandoNivel = true
+            self.cargarNivel()
+        })
+        keyboard.num3().onPressDo ({
+            if(gestorPantallas.pantallaActual() != self || cargandoNivel) {self.error("") }
+            nivelElegido = nivel3
+            cargandoNivel = true
+            self.cargarNivel()
         })
     }
 }
@@ -64,12 +81,10 @@ object pantallaVictoria inherits Pantalla {
     method initialize() {tipo = imagenVictoria}
     override method mostrar() {
         game.addVisual(tipo)
-        reproducir.pararLaMusica()
-        reproducir.musicaVictoria()
+        gestorSonidos.musicaVictoria()
 
         game.schedule(5000, {
-            reproducir.pararLaMusica()
-            gestorPantallas.mostrarPantalla(pantallaDificultad) // Volver a la selección de niveles
+            gestorPantallas.mostrarPantalla(pantallaDificultad)
         })
     }
 }
@@ -78,21 +93,19 @@ object pantallaDerrota inherits Pantalla {
     method initialize() {tipo = imagenDerrota}
     override method mostrar() {
         game.addVisual(tipo)
-        reproducir.pararLaMusica()
-        reproducir.musicaDerrota()
-
+        gestorSonidos.musicaDerrota()
         game.schedule(5000, {
-            reproducir.pararLaMusica()
-            gestorPantallas.mostrarPantalla(pantallaDificultad) // Volver a la selección de niveles
+            gestorPantallas.mostrarPantalla(pantallaDificultad)
         })
     }
 }
 
 object pantallaNivel inherits Pantalla {
     var property tipoNivel = nivel1
-    var boxeadorRival = null
+    var property boxeadorRival = null
     const accionesRival = []
     var pantallaFinal = null
+    var property verificandoVida = false
 
     method initialize() {tipo = pantallaRing}
 
@@ -100,10 +113,19 @@ object pantallaNivel inherits Pantalla {
         boxeadorRival = tipoNivel.rival()
 
         self.limpiarVisuales()
+        boxeadorJugador.reiniciar()
+        boxeadorRival.reiniciar()
+        mario.reiniciar()
+
         game.addVisual(tipo)
         game.addVisual(boxeadorRival)
         game.addVisual(boxeadorJugador)
         game.addVisual(vidaJugador)
+
+        if(!mario.sePuedePelear() && boxeadorRival.vida() == 100 && boxeadorJugador.vida() == 100){
+            game.addVisual(mario)
+            mario.contar()
+        }
 
         vidaOponente.oponente(boxeadorRival)
         game.addVisual(vidaOponente)
@@ -113,7 +135,7 @@ object pantallaNivel inherits Pantalla {
         accionesRival.clear()
         accionesRival.addAll(tipoNivel.accionesRival())
 
-        reproducir.musicaPelea()
+        gestorSonidos.musicaPelea()
 
         // Establecer rival del jugador
         boxeadorJugador.rival(boxeadorRival)
@@ -121,45 +143,44 @@ object pantallaNivel inherits Pantalla {
         //Inicia la IA del rival
         self.iniciarIARival()
 
-        // Asignar controles para atacar y cubrirse
+        //Controles de pantalla
         keyboard.z().onPressDo {  
-            if(gestorPantallas.pantallaActual() != self) {self.error("No se puede usar esa tecla en esta pantalla") }   
+            if(gestorPantallas.pantallaActual() != self || !mario.sePuedePelear()) {self.error("") }   
             boxeadorJugador.atacar()
-            self.verificarVida()
         }
         keyboard.c().onPressDo {
-            if(gestorPantallas.pantallaActual() != self) {self.error("No se puede usar esa tecla en esta pantalla") }
+            if(gestorPantallas.pantallaActual() != self || !mario.sePuedePelear()) {self.error("") }
             boxeadorJugador.atacarEspecial()
-            self.verificarVida()
         }
         keyboard.x().onPressDo {
-            if(gestorPantallas.pantallaActual() != self) {self.error("No se puede usar esa tecla en esta pantalla") }
+            if(gestorPantallas.pantallaActual() != self || !mario.sePuedePelear()) {self.error("") }
             boxeadorJugador.cubrirse()
         }
     }
 
     method iniciarIARival() {
         game.onTick(1000, "iaRival", {
-            if (boxeadorRival.vida() > 0 && boxeadorJugador.vida() > 0) {
+            if (boxeadorRival.vida() > 0 && boxeadorJugador.vida() > 0 && mario.sePuedePelear()) {
                 self.decidirAccionDelRival()
-                self.verificarVida() //¿fuera?
             }
         })
     }
 
     method decidirAccionDelRival(){
+        if(boxeadorRival.vida() <= 0) {boxeadorRival.estado(derrota) self.error("") } 
         accionesRival.findOrDefault({a => a.esEjecutable()}, accionDescansar).ejecutar(boxeadorRival)
     }
 
     // Método para verificar la vida de ambos boxeadores
     method verificarVida() {
-        if (boxeadorRival.vida() <= 0) { 
+        verificandoVida = true
+        if (boxeadorRival.vida() <= 0) {
             boxeadorJugador.estado(victoria)
             boxeadorRival.estado(derrota)
             pantallaFinal = pantallaVictoria
 
             game.schedule(1000,
-               {self.reiniciarNivel()}
+               {self.reiniciarNivel() verificandoVida = false}
             )
             
         } else if (boxeadorJugador.vida() <= 0) {
@@ -168,17 +189,16 @@ object pantallaNivel inherits Pantalla {
             pantallaFinal = pantallaDerrota
 
             game.schedule(1000,
-                {self.reiniciarNivel()}
+                {self.reiniciarNivel() verificandoVida = false}
             )           
         }
     }
 
     method reiniciarNivel(){
-        boxeadorJugador.reiniciar()
-        boxeadorRival.reiniciar()
+        if(gestorPantallas.pantallaActual() != self || !mario.sePuedePelear()) {self.error("") } 
         self.limpiarVisuales()
-
         game.removeTickEvent("iaRival")
+        mario.reiniciar()
         gestorPantallas.mostrarPantalla(pantallaFinal)
     }
 
@@ -261,69 +281,4 @@ object vidaOponente {
     var property oponente = joe
     method position() = game.at(13, 13)
     method image() = "vida" + self.oponente().vida() + ".png"
-}
-
-//Músicas
-object reproducir{
-    var mscActual = game.sound("01 Punch Out!! Theme.mp3")
-    
-    const golpe = game.sound("m28 (se) Punching Opponent.mp3")
-    
-    method musicaMenu() {
-        game.schedule(500, {mscActual.play() mscActual.shouldLoop(true)})
-        }
-    method musicaEnter() {
-        mscActual = game.sound("21 (se) Punching Title Name.mp3")
-        mscActual.play()
-        }
-    method musicaDificultad() {
-        mscActual = game.sound("18 Warming Up with Doc.mp3")
-        game.schedule(500, {mscActual.play() mscActual.shouldLoop(true)})
-        mscActual.volume(0.4)
-        }     
-    method musicaPelea() {
-        mscActual = game.sound("10 Match BGM.mp3")
-        game.schedule(500, {mscActual.play() mscActual.shouldLoop(true)})
-        }
-    method musicaVictoria() {
-        mscActual = game.sound("14 Bout Winner.mp3")
-        game.schedule(500, {mscActual.play()})
-        }
-    method musicaDerrota() {
-        mscActual = game.sound("12 You Lose.mp3")
-        game.schedule(500, {mscActual.play()})
-        }
-
-    method sonidoGolpe() {golpe.play()}
-    method pararLaMusica() {
-      mscActual.stop()
-    }
-}
-
-// Imágenes
-
-class Imagen {
-    var property tipo = ""
-    var property position = game.at(0, 0)
-    method image() = "imagen" + self.tipo() + ".png" 
-}
-
-object imagenMenu inherits Imagen{ 
-    method initialize() {tipo = "Menu"}
-}
-
-object imagenDificultad inherits Imagen{
-	method initialize() {tipo = "MenuDificultad"}
-}
-
-object imagenDerrota inherits Imagen{
-	method initialize() {tipo = "PantallaDerrota"}
-}
-
-object imagenVictoria inherits Imagen{
-    method initialize() {tipo = "PantallaVictoria"}
-}
-
-object pantallaRing inherits Imagen{
-    override method image() = "ring" + self.tipo() + ".png"
 }

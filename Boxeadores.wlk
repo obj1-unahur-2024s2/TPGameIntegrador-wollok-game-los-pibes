@@ -1,5 +1,7 @@
+import pantallas.*
 import wollok.game.*
 import juego.*
+import imagenYSonido.*
 
 class Boxeador{
     var property vida = 100
@@ -21,22 +23,27 @@ class Boxeador{
     }
 
     method estaProtegido() = estado.protege()
+    method estaDerrotado() = estado.nombre() == "Derrota"
 
     method atacar() {
+        if(!mario.sePuedePelear() || rival.estaDerrotado()) {self.error("")}
         self.estado(atacando)
 
         if (not rival.estaProtegido()){
-           rival.recibirGolpe() 
+           rival.recibirGolpe()
+           pantallaNivel.verificarVida()
         }
 
         game.schedule(1000, { self.descansar() })
     }
 
     method atacarEspecial() {
+        if(!mario.sePuedePelear() || rival.estaDerrotado()) {self.error("")}
         self.estado(atacandoEspecial)
 
         if (not rival.estaProtegido()){
            rival.recibirGolpeEspecial() 
+           pantallaNivel.verificarVida()
         }
 
         game.schedule(1000, { self.descansar() })
@@ -48,6 +55,7 @@ class Boxeador{
     }
 
     method descansar() {
+        if(self.estaDerrotado()) {self.error("")}
         estado = quieto
     }
 
@@ -71,7 +79,7 @@ object boxeadorJugador inherits Boxeador{
     override method recibirGolpe() {
         vida = 0.max(vida- 10 * rival.potenciaDeAtaque())
         self.estado(golpeado)
-        game.schedule(1500, { self.descansar() }
+        game.schedule(1500, { self.descansar() })
     }
 }
 

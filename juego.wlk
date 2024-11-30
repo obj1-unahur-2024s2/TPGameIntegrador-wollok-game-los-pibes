@@ -10,7 +10,7 @@ object juego{
 		game.height(15)
 		game.width(16)
 
-        gestorPantallas.mostrarPantalla(pantallaMenu)
+        gestorPantallas.mostrarPantalla(pantallaCarga)
 	}
 }
 
