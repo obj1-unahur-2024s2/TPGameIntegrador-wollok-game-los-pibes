@@ -67,6 +67,12 @@ object boxeadorJugador inherits Boxeador{
     }
 
     override method tipo() = "boxeadorJugador"
+
+    override method recibirGolpe() {
+        vida = 0.max(vida- 10 * rival.potenciaDeAtaque())
+        self.estado(golpeado)
+        game.schedule(1500, { self.descansar() }
+    }
 }
 
 class Oponente inherits Boxeador{
@@ -75,16 +81,20 @@ class Oponente inherits Boxeador{
     method initialize(){
         rival = boxeadorJugador
     }
+    method potenciaDeAtaque()  
 }
 object joe inherits Oponente{
     override method tipo() = "joe"
+    override method potenciaDeAtaque() = 1.5 
 }
 object rocky inherits Oponente{
     override method tipo() = "rocky"
+    override method potenciaDeAtaque() = 2
 }
 
 object tyson inherits Oponente{
     override method tipo() = "tyson"
+    override method potenciaDeAtaque() = 4
 }
 
 //Estados

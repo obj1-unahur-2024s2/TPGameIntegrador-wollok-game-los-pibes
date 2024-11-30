@@ -193,19 +193,19 @@ object pantallaNivel inherits Pantalla {
 
 object nivel1{
     method rival() = joe
-    method accionesRival() = [new AccionAtacar(probabilidad=30)]
+    method accionesRival() = [new AccionAtacar(probabilidad=35), new AccionCubrirse(probabilidad=25)]
     method cambiarFondo() {pantallaRing.tipo(1)}
 }
 
 object nivel2 {
     method rival() = rocky
-    method accionesRival() = [new AccionAtacar(probabilidad=35), new AccionCubrirse(probabilidad=10)]
+    method accionesRival() = [new AccionAtacar(probabilidad=45), new AccionCubrirse(probabilidad=35)]
     method cambiarFondo() {pantallaRing.tipo(2)}
 }
 
 object nivel3 {
     method rival() = tyson
-    method accionesRival() = [new AccionAtacar(probabilidad=40), new AccionCubrirse(probabilidad=15), new AccionAtacarEspecial(probabilidad=20)]
+    method accionesRival() = [new AccionAtacar(probabilidad=75), new AccionCubrirse(probabilidad=60), new AccionAtacarEspecial(probabilidad=20)]
     method cambiarFondo() {pantallaRing.tipo(3)}
 }
 
