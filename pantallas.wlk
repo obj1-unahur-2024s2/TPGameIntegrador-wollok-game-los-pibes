@@ -105,7 +105,6 @@ object pantallaNivel inherits Pantalla {
     var property boxeadorRival = null
     const accionesRival = []
     var pantallaFinal = null
-    var property verificandoVida = false
 
     method initialize() {tipo = pantallaRing}
 
@@ -173,31 +172,39 @@ object pantallaNivel inherits Pantalla {
 
     // Método para verificar la vida de ambos boxeadores
     method verificarVida() {
-        verificandoVida = true
         if (boxeadorRival.vida() <= 0) {
             boxeadorJugador.estado(victoria)
             boxeadorRival.estado(derrota)
             pantallaFinal = pantallaVictoria
+            gestorSonidos.sonidoCampana()
+            game.onTick(500, "tribunaAlocada", {tribunaLoca.alocarse()})
+            gestorSonidos.pararMusica()
+            gestorSonidos.sonidoTribuna()
 
-            game.schedule(1000,
-               {self.reiniciarNivel() verificandoVida = false}
+            game.schedule(4500,
+               {self.reiniciarNivel()}
             )
             
         } else if (boxeadorJugador.vida() <= 0) {
 			boxeadorRival.estado(victoria)
             boxeadorJugador.estado(derrota)
             pantallaFinal = pantallaDerrota
+            gestorSonidos.sonidoCampana()
+            game.addVisual(tribunaLoca)
+            gestorSonidos.pararMusica()
+            gestorSonidos.sonidoTribuna()
 
-            game.schedule(1000,
-                {self.reiniciarNivel() verificandoVida = false}
+            game.schedule(4500,
+                {self.reiniciarNivel()}
             )           
         }
     }
 
     method reiniciarNivel(){
         if(gestorPantallas.pantallaActual() != self || !mario.sePuedePelear()) {self.error("") } 
-        self.limpiarVisuales()
         game.removeTickEvent("iaRival")
+        game.removeTickEvent("tribunaAlocada")
+        self.limpiarVisuales()
         mario.reiniciar()
         gestorPantallas.mostrarPantalla(pantallaFinal)
     }
@@ -208,6 +215,7 @@ object pantallaNivel inherits Pantalla {
         game.removeVisual(vidaJugador)
         game.removeVisual(vidaOponente)
         game.removeVisual(tipo)
+        game.removeVisual(tribunaLoca)
     }
 }
 

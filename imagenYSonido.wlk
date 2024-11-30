@@ -23,9 +23,12 @@ object gestorSonidos {
 
         // Efectos de sonido
         efectos.put("golpe", "sonGolpe.ogg")
+        efectos.put("golpeEspecial", "sonGolpeEspecial.ogg")
+        efectos.put("bloqueo", "sonBloqueo.ogg")
         efectos.put("enter", "sonEnter.ogg")
         efectos.put("campana", "sonCampana.ogg")
         efectos.put("campanaSimple", "sonCampanaSimple.ogg")
+        efectos.put("tribuna", "sonTribuna.ogg")
     }
 
     // Método para reproducir música
@@ -65,9 +68,12 @@ object gestorSonidos {
 
 
     method sonidoGolpe() {self.reproducirEfecto("golpe")}
+    method sonidoGolpeEspecial() {self.reproducirEfecto("golpeEspecial")}
+    method sonidoBloqueo() {self.reproducirEfecto("bloqueo")}
     method sonidoEnter() {self.reproducirEfecto("enter")}
     method sonidoCampana() {self.reproducirEfecto("campana")}
     method sonidoCampanaSimple() {self.reproducirEfecto("campanaSimple")}
+    method sonidoTribuna() {self.reproducirEfecto("tribuna")}
 }
 
 //IMAGEN
@@ -101,6 +107,16 @@ object pantallaRing inherits Imagen{
     override method image() = "ring" + self.tipo() + ".png"
 }
 
+object tribunaLoca inherits Imagen{
+    var alocada = false
+    method initialize() {tipo = "TribunaLoca"}
+    
+    method alocarse() {
+        if(alocada) {game.removeVisual(self) alocada = false}
+        else {game.addVisual(self) alocada = true}
+    }
+}
+
 //Imágenes Mario
 
 object mario{
@@ -131,7 +147,8 @@ object mario{
             })
     }
 
-    method sonarCampanadas() {if(contador <= 3) {gestorSonidos.sonidoCampanaSimple()} else if(contador == 4) {gestorSonidos.sonidoCampana()}}
+    method sonarCampanadas() {if(contador <= 3) {gestorSonidos.sonidoCampanaSimple()} 
+        else if(contador == 4) {gestorSonidos.sonidoCampana()}}
     method reiniciar(){
         contador = 1
         sePuedePelear = false

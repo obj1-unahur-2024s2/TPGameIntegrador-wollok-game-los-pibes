@@ -32,7 +32,8 @@ class Boxeador{
         if (not rival.estaProtegido()){
            rival.recibirGolpe()
            pantallaNivel.verificarVida()
-        }
+           gestorSonidos.sonidoGolpe()
+        } else {gestorSonidos.sonidoBloqueo()}
 
         game.schedule(1000, { self.descansar() })
     }
@@ -42,9 +43,10 @@ class Boxeador{
         self.estado(atacandoEspecial)
 
         if (not rival.estaProtegido()){
-           rival.recibirGolpeEspecial() 
-           pantallaNivel.verificarVida()
-        }
+            rival.recibirGolpeEspecial() 
+            pantallaNivel.verificarVida()
+            gestorSonidos.sonidoGolpeEspecial()
+        } else {gestorSonidos.sonidoBloqueo()}
 
         game.schedule(1000, { self.descansar() })
     }
