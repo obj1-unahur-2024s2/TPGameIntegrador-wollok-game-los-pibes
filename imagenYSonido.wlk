@@ -113,7 +113,7 @@ object tribunaLoca inherits Imagen{
     
     method alocarse() {
         if(alocada) {game.removeVisual(self) alocada = false}
-        else {game.addVisual(self) alocada = true}
+        else if(gestorPantallas.pantallaActual() != pantallaNivel) {game.addVisual(self) alocada = true}
     }
 }
 

@@ -123,7 +123,7 @@ object pantallaNivel inherits Pantalla {
 
         if(!mario.sePuedePelear() && boxeadorRival.vida() == 100 && boxeadorJugador.vida() == 100){
             game.addVisual(mario)
-            mario.contar()
+            game.schedule(1000, {mario.contar()})
         }
 
         vidaOponente.oponente(boxeadorRival)
@@ -144,11 +144,14 @@ object pantallaNivel inherits Pantalla {
 
         //Controles de pantalla
         keyboard.z().onPressDo {  
-            if(gestorPantallas.pantallaActual() != self || !mario.sePuedePelear()) {self.error("") }   
+            if(gestorPantallas.pantallaActual() != self || !mario.sePuedePelear() || !boxeadorJugador.estaQuieto()) {self.error("") }   
+            
+            const rivalSeCubre = (0.randomUpTo(3)).round()
+            if(rivalSeCubre > 1) {boxeadorRival.cubrirse()}
             boxeadorJugador.atacar()
         }
         keyboard.c().onPressDo {
-            if(gestorPantallas.pantallaActual() != self || !mario.sePuedePelear()) {self.error("") }
+            if(gestorPantallas.pantallaActual() != self || !mario.sePuedePelear() || !boxeadorJugador.estaQuieto()) {self.error("") }
             boxeadorJugador.atacarEspecial()
         }
         keyboard.x().onPressDo {
@@ -159,7 +162,7 @@ object pantallaNivel inherits Pantalla {
 
     method iniciarIARival() {
         game.onTick(1000, "iaRival", {
-            if (boxeadorRival.vida() > 0 && boxeadorJugador.vida() > 0 && mario.sePuedePelear()) {
+            if (self.ambosConVida() && mario.sePuedePelear() && boxeadorRival.estaQuieto()) {
                 self.decidirAccionDelRival()
             }
         })
@@ -171,11 +174,12 @@ object pantallaNivel inherits Pantalla {
     }
 
     // Método para verificar la vida de ambos boxeadores
+
+    method ambosConVida() = boxeadorRival.vida() > 0 && boxeadorJugador.vida() > 0
+    
     method verificarVida() {
-        if (boxeadorRival.vida() <= 0) {
-            boxeadorJugador.estado(victoria)
-            boxeadorRival.estado(derrota)
-            pantallaFinal = pantallaVictoria
+        if (!self.ambosConVida()) {
+            self.determinarGanador()
             gestorSonidos.sonidoCampana()
             game.onTick(500, "tribunaAlocada", {tribunaLoca.alocarse()})
             gestorSonidos.pararMusica()
@@ -184,19 +188,18 @@ object pantallaNivel inherits Pantalla {
             game.schedule(4500,
                {self.reiniciarNivel()}
             )
-            
-        } else if (boxeadorJugador.vida() <= 0) {
-			boxeadorRival.estado(victoria)
-            boxeadorJugador.estado(derrota)
-            pantallaFinal = pantallaDerrota
-            gestorSonidos.sonidoCampana()
-            game.addVisual(tribunaLoca)
-            gestorSonidos.pararMusica()
-            gestorSonidos.sonidoTribuna()
+        }
+    }
 
-            game.schedule(4500,
-                {self.reiniciarNivel()}
-            )           
+    method determinarGanador() {
+        if (boxeadorRival.vida() <= 0) {
+            boxeadorJugador.estado(victoria)
+            boxeadorRival.estado(derrota)
+            pantallaFinal = pantallaVictoria
+        } else if (boxeadorJugador.vida() <= 0) {
+            boxeadorJugador.estado(derrota)
+            boxeadorRival.estado(victoria)
+            pantallaFinal = pantallaDerrota
         }
     }
 
@@ -204,8 +207,8 @@ object pantallaNivel inherits Pantalla {
         if(gestorPantallas.pantallaActual() != self || !mario.sePuedePelear()) {self.error("") } 
         game.removeTickEvent("iaRival")
         game.removeTickEvent("tribunaAlocada")
-        self.limpiarVisuales()
         mario.reiniciar()
+        self.limpiarVisuales()
         gestorPantallas.mostrarPantalla(pantallaFinal)
     }
 
@@ -238,7 +241,7 @@ object nivel3 {
 }
 
 object talvez {
-    method seaCierto(porcentaje) = 0.randomUpTo(1) * 100 < porcentaje
+    method seaCierto(porcentaje) = (0.randomUpTo(1) * 100).round() < porcentaje
 }
 
 //Acciones del rival para la IA
@@ -252,19 +255,20 @@ class AccionRival {
 
 class AccionAtacar inherits AccionRival {
     override method ejecutar(boxeadorRival) {
-        boxeadorRival.atacar()
-    }
-}
-
-class AccionCubrirse inherits AccionRival {
-    override method ejecutar(boxeadorRival) {
-        boxeadorRival.cubrirse()
+        boxeadorRival.prepararGolpe(1)
     }
 }
 
 class AccionAtacarEspecial inherits AccionRival {
     override method ejecutar(boxeadorRival) {
-        boxeadorRival.atacarEspecial()
+        boxeadorRival.prepararGolpe(2)
+    }
+}
+
+
+class AccionCubrirse inherits AccionRival {
+    override method ejecutar(boxeadorRival) {
+        boxeadorRival.cubrirse()
     }
 }
 
