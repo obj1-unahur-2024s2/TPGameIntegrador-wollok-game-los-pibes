@@ -25,10 +25,12 @@ object gestorSonidos {
         efectos.put("golpe", "sonGolpe.ogg")
         efectos.put("golpeEspecial", "sonGolpeEspecial.ogg")
         efectos.put("bloqueo", "sonBloqueo.ogg")
+        efectos.put("bloqueoEspecial", "sonBloqueoEspecial.ogg")
         efectos.put("enter", "sonEnter.ogg")
         efectos.put("campana", "sonCampana.ogg")
         efectos.put("campanaSimple", "sonCampanaSimple.ogg")
         efectos.put("tribuna", "sonTribuna.ogg")
+        efectos.put("alertaEspecial", "sonAlertaEspecial.ogg")
     }
 
     // Método para reproducir música
@@ -52,10 +54,10 @@ object gestorSonidos {
 
     // Método para reproducir efectos de sonido
     method reproducirEfecto(nombre) {
-        var ruta = efectos.get(nombre)
+        const ruta = efectos.get(nombre)
         if (ruta == null) { self.error("Efecto de sonido no encontrado: " + nombre) }
 
-        var efecto = game.sound(ruta)
+        const efecto = game.sound(ruta)
         efecto.volume(0.8)
         efecto.play()
     }
@@ -70,10 +72,12 @@ object gestorSonidos {
     method sonidoGolpe() {self.reproducirEfecto("golpe")}
     method sonidoGolpeEspecial() {self.reproducirEfecto("golpeEspecial")}
     method sonidoBloqueo() {self.reproducirEfecto("bloqueo")}
+    method sonidoBloqueoEspecial() {self.reproducirEfecto("bloqueoEspecial")}
     method sonidoEnter() {self.reproducirEfecto("enter")}
     method sonidoCampana() {self.reproducirEfecto("campana")}
     method sonidoCampanaSimple() {self.reproducirEfecto("campanaSimple")}
     method sonidoTribuna() {self.reproducirEfecto("tribuna")}
+    method sonidoAlertaEspecial() {self.reproducirEfecto("alertaEspecial")}
 }
 
 //IMAGEN
@@ -95,14 +99,6 @@ object imagenDificultad inherits Imagen{
 	method initialize() {tipo = "MenuDificultad"}
 }
 
-object imagenDerrota inherits Imagen{
-	method initialize() {tipo = "PantallaDerrota"}
-}
-
-object imagenVictoria inherits Imagen{
-    method initialize() {tipo = "PantallaVictoria"}
-}
-
 object pantallaRing inherits Imagen{
     override method image() = "ring" + self.tipo() + ".png"
 }
@@ -112,9 +108,23 @@ object tribunaLoca inherits Imagen{
     method initialize() {tipo = "TribunaLoca"}
     
     method alocarse() {
-        if(alocada) {game.removeVisual(self) alocada = false}
-        else if(gestorPantallas.pantallaActual() != pantallaNivel) {game.addVisual(self) alocada = true}
+        if(alocada || gestorPantallas.pantallaActual() != pantallaNivel) 
+        {game.removeVisual(self) alocada = false}
+        else {game.addVisual(self) alocada = true}
     }
+}
+
+object imagenDerrota inherits Imagen{
+	method initialize() {tipo = "PantallaDerrota"}
+}
+
+object imagenVictoria inherits Imagen{
+    method initialize() {tipo = "PantallaVictoria"}
+}
+
+object imgAtaqueEspecial{
+    method position() = game.at(3, 3)
+    method image() = "imgAtaqueEspecial.png"
 }
 
 //Imágenes Mario
@@ -125,7 +135,7 @@ object mario{
 
     method contador() = contador
     method sePuedePelear() = sePuedePelear
-    method position() = game.at(13, 0)
+    method position() = game.at(13, 1)
     method image() = "mario1.png"
 
     method contar(){
@@ -156,6 +166,6 @@ object mario{
 }
 
 object globoDialogo{
-    method position() = game.at(10, 2)
+    method position() = game.at(10, 3)
     method image() = "globo" + mario.contador() + ".png"
 }

@@ -105,6 +105,7 @@ object pantallaNivel inherits Pantalla {
     var property boxeadorRival = null
     const accionesRival = []
     var pantallaFinal = null
+    var hayPermisoEspecial = false
 
     method initialize() {tipo = pantallaRing}
 
@@ -139,8 +140,9 @@ object pantallaNivel inherits Pantalla {
         // Establecer rival del jugador
         boxeadorJugador.rival(boxeadorRival)
 
-        //Inicia la IA del rival
+        //Inicia la IA del rival y permiso de ataque especial
         self.iniciarIARival()
+        self.iniciarPermisoEspecial()
 
         //Controles de pantalla
         keyboard.z().onPressDo {  
@@ -150,15 +152,30 @@ object pantallaNivel inherits Pantalla {
             if(rivalSeCubre > 1) {boxeadorRival.cubrirse()}
             boxeadorJugador.atacar()
         }
-        keyboard.c().onPressDo {
-            if(gestorPantallas.pantallaActual() != self || !mario.sePuedePelear() || !boxeadorJugador.estaQuieto()) {self.error("") }
-            boxeadorJugador.atacarEspecial()
-        }
         keyboard.x().onPressDo {
             if(gestorPantallas.pantallaActual() != self || !mario.sePuedePelear()) {self.error("") }
             boxeadorJugador.cubrirse()
         }
+        keyboard.c().onPressDo {
+            if(gestorPantallas.pantallaActual() != self || !mario.sePuedePelear() || !self.jugadoPuedeAtacarEspecial()) {self.error("") }
+            boxeadorJugador.atacarEspecial()
+        }
     }
+
+    method iniciarPermisoEspecial(){
+        game.onTick(4000, "permisoEspecial", {if(talvez.seaCierto(28)) {self.darPermisoEspecial()}})
+    }
+
+    method darPermisoEspecial(){
+        hayPermisoEspecial = true
+        game.addVisual(imgAtaqueEspecial)
+        gestorSonidos.sonidoAlertaEspecial()
+        game.schedule(2000, {hayPermisoEspecial = false game.removeVisual(imgAtaqueEspecial)})
+    }
+
+    method jugadoPuedeAtacarEspecial() = hayPermisoEspecial && boxeadorJugador.estaQuieto()
+
+    //IA del rival
 
     method iniciarIARival() {
         game.onTick(1000, "iaRival", {
@@ -167,6 +184,7 @@ object pantallaNivel inherits Pantalla {
             }
         })
     }
+
 
     method decidirAccionDelRival(){
         if(boxeadorRival.vida() <= 0) {boxeadorRival.estado(derrota) self.error("") } 
@@ -181,6 +199,7 @@ object pantallaNivel inherits Pantalla {
         if (!self.ambosConVida()) {
             self.determinarGanador()
             gestorSonidos.sonidoCampana()
+            game.removeTickEvent("permisoEspecial")
             game.onTick(500, "tribunaAlocada", {tribunaLoca.alocarse()})
             gestorSonidos.pararMusica()
             gestorSonidos.sonidoTribuna()
@@ -207,6 +226,7 @@ object pantallaNivel inherits Pantalla {
         if(gestorPantallas.pantallaActual() != self || !mario.sePuedePelear()) {self.error("") } 
         game.removeTickEvent("iaRival")
         game.removeTickEvent("tribunaAlocada")
+        game.removeTickEvent("permisoEspecial")
         mario.reiniciar()
         self.limpiarVisuales()
         gestorPantallas.mostrarPantalla(pantallaFinal)
@@ -236,12 +256,12 @@ object nivel2 {
 
 object nivel3 {
     method rival() = tyson
-    method accionesRival() = [new AccionAtacar(probabilidad=75), new AccionCubrirse(probabilidad=60), new AccionAtacarEspecial(probabilidad=20)]
+    method accionesRival() = [new AccionAtacar(probabilidad=75), new AccionCubrirse(probabilidad=45), new AccionAtacarEspecial(probabilidad=20)]
     method cambiarFondo() {pantallaRing.tipo(3)}
 }
 
 object talvez {
-    method seaCierto(porcentaje) = (0.randomUpTo(1) * 100).round() < porcentaje
+    method seaCierto(porcentaje) = (0.randomUpTo(1) * 100) < porcentaje
 }
 
 //Acciones del rival para la IA

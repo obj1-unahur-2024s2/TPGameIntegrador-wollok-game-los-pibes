@@ -62,15 +62,15 @@ class Boxeador{
     method atacarEspecial() {
         if(!mario.sePuedePelear() || rival.yaNoPelea()) {self.error("")}
 
-        self.estado(atacando)
+        self.estado(atacandoEspecial)
 
         if (!rival.estaProtegido()){
             rival.recibirGolpeEspecial() 
             pantallaNivel.verificarVida()
             gestorSonidos.sonidoGolpeEspecial()
-        } else {gestorSonidos.sonidoBloqueo()}
+        } else {gestorSonidos.sonidoBloqueoEspecial()}
 
-        game.schedule(1000, { self.descansar() })
+        game.schedule(2000, { self.descansar() })
     }
 
     method cubrirse() {
