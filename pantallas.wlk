@@ -110,6 +110,13 @@ object pantallaNivel inherits Pantalla {
     method initialize() {tipo = pantallaRing}
 
     override method mostrar() {
+        const imagenVersus = tipoNivel.imagenVersus()
+        game.addVisual(imagenVersus)
+        gestorSonidos.musicaComienzaNivel()
+        game.schedule(4000, {self.iniciarNivel() game.removeVisual(imagenVersus)}) 
+    }
+    
+    method iniciarNivel() {
         boxeadorRival = tipoNivel.rival()
 
         self.limpiarVisuales()
@@ -139,6 +146,7 @@ object pantallaNivel inherits Pantalla {
 
         // Establecer rival del jugador
         boxeadorJugador.rival(boxeadorRival)
+        boxeadorJugador.poder(tipoNivel.poderJugador())
 
         //Inicia la IA del rival y permiso de ataque especial
         self.iniciarIARival()
@@ -163,7 +171,7 @@ object pantallaNivel inherits Pantalla {
     }
 
     method iniciarPermisoEspecial(){
-        game.onTick(4000, "permisoEspecial", {if(talvez.seaCierto(28)) {self.darPermisoEspecial()}})
+        game.onTick(4000, "permisoEspecial", {if(talvez.seaCierto(tipoNivel.probabilidadPermisoEspecial())) {self.darPermisoEspecial()}})
     }
 
     method darPermisoEspecial(){
@@ -214,6 +222,7 @@ object pantallaNivel inherits Pantalla {
         if (boxeadorRival.vida() <= 0) {
             boxeadorJugador.estado(victoria)
             boxeadorRival.estado(derrota)
+            boxeadorRival.position(game.at(6,5))
             pantallaFinal = pantallaVictoria
         } else if (boxeadorJugador.vida() <= 0) {
             boxeadorJugador.estado(derrota)
@@ -244,20 +253,29 @@ object pantallaNivel inherits Pantalla {
 
 object nivel1{
     method rival() = joe
+    method imagenVersus() = imagenVersusJoe
     method accionesRival() = [new AccionAtacar(probabilidad=35), new AccionCubrirse(probabilidad=25)]
     method cambiarFondo() {pantallaRing.tipo(1)}
+    method poderJugador() = 20
+    method probabilidadPermisoEspecial() = 30
 }
 
 object nivel2 {
     method rival() = rocky
-    method accionesRival() = [new AccionAtacar(probabilidad=45), new AccionCubrirse(probabilidad=35)]
+    method imagenVersus() = imagenVersusRocky
+    method accionesRival() = [new AccionAtacar(probabilidad=45), new AccionCubrirse(probabilidad=25), new AccionAtacarEspecial(probabilidad=5)]
     method cambiarFondo() {pantallaRing.tipo(2)}
+    method poderJugador() = 10
+    method probabilidadPermisoEspecial() = 28
 }
 
 object nivel3 {
     method rival() = tyson
-    method accionesRival() = [new AccionAtacar(probabilidad=75), new AccionCubrirse(probabilidad=45), new AccionAtacarEspecial(probabilidad=20)]
+    method imagenVersus() = imagenVersusTyson
+    method accionesRival() = [new AccionAtacar(probabilidad=80), new AccionCubrirse(probabilidad=5), new AccionAtacarEspecial(probabilidad=30)]
     method cambiarFondo() {pantallaRing.tipo(3)}
+    method poderJugador() = 5
+    method probabilidadPermisoEspecial() = 20
 }
 
 object talvez {

@@ -7,19 +7,27 @@ class Boxeador{
     var property vida = 100
     var property estado = quieto
     var property rival
+    var property poder
+    var property yBase
+    var idCubrir = 0 //Identifica cada acción de «Cubrir» con un número incremental
 
-    method image() =  self.tipo() + estado.nombre() + ".png" //la imagen se cambia sola según el estado
+    var property position = game.at(6,yBase)
+
+    method yDeAtaque() = if(yBase < 2) {1} else {3}
+    method image() =  self.tipo() + estado.nombre() + ".png"
     method probabilidadDeFallar() = 0
 
     method recibirGolpe() {
-        vida = 0.max(vida-10)
+        vida = 0.max(vida-rival.poder())
         self.estado(golpeado)
+        position = game.at(6,yBase)
         game.schedule(1500, { self.descansar() })
     }
 
     method recibirGolpeEspecial() {
-        vida = 0.max(vida-20)
-        self.estado(golpeado)
+        vida = 0.max(vida - (rival.poder() + 15))
+        self.estado(golpeadoEspecial)
+        position = game.at(6,yBase)
         game.schedule(1500, { self.descansar() })
     }
 
@@ -29,7 +37,7 @@ class Boxeador{
 
     method prepararGolpe(tipoDeGolpe){ //tipo 1: golpe normal, tipo 2: golpe especial
         self.estado(preparandoGolpe)
-        game.schedule(1200, {
+        game.schedule(600, {
             if(tipoDeGolpe == 1 && estado.nombre() == "PreparandoGolpe"){self.atacar()}
             else if (estado.nombre() == "PreparandoGolpe"){self.atacarEspecial()}
         })
@@ -49,6 +57,7 @@ class Boxeador{
 
     method concretarAtaqueNormal(){
         self.estado(atacando)
+        position = game.at(6,self.yDeAtaque())
 
         if (!rival.estaProtegido()){
            rival.recibirGolpe()
@@ -56,13 +65,14 @@ class Boxeador{
            gestorSonidos.sonidoGolpe()
         } else {gestorSonidos.sonidoBloqueo()}
 
-        game.schedule(600, { self.descansar() })
+        game.schedule(600, { self.descansar() position = game.at(6,yBase) })
     }
 
     method atacarEspecial() {
         if(!mario.sePuedePelear() || rival.yaNoPelea()) {self.error("")}
 
         self.estado(atacandoEspecial)
+        position = game.at(6,self.yDeAtaque())
 
         if (!rival.estaProtegido()){
             rival.recibirGolpeEspecial() 
@@ -70,66 +80,65 @@ class Boxeador{
             gestorSonidos.sonidoGolpeEspecial()
         } else {gestorSonidos.sonidoBloqueoEspecial()}
 
-        game.schedule(2000, { self.descansar() })
+        game.schedule(2000, { self.descansar() position = game.at(6,yBase) })
     }
 
     method cubrirse() {
         self.estado(cubriendo)
-        game.schedule(2000, { self.descansar() })
+        idCubrir += 1
+        const idCubrirActual = idCubrir 
+        game.schedule(1000, 
+            { if(idCubrirActual == idCubrir) {self.descansar() idCubrir=0} }
+        ) //Solo deja de cubrirse si no se ejecutó la acción nuevamente
     }
 
     method descansar() {
         if(self.yaNoPelea()) {self.error("")}
         estado = quieto
+        position = game.at(6,yBase)
     }
 
     method reiniciar(){
         vida = 100
         estado = quieto
+        position = game.at(6,yBase)
     }
 
     method tipo()
 }
 
 object boxeadorJugador inherits Boxeador{
-    var property position = game.at(6,0)
-    
     method initialize(){
         rival = ""
+        poder = 0
+        yBase = 0
     }
 
     override method tipo() = "boxeadorJugador"
     override method probabilidadDeFallar() = 2
-
-    override method recibirGolpe() {
-        vida = 0.max(vida- 10 * rival.potenciaDeAtaque())
-        self.estado(golpeado)
-        game.schedule(1500, { self.descansar() })
-    }
 }
 
 class Oponente inherits Boxeador{
-    var property position = game.at(6,4)
-
     method initialize(){
         rival = boxeadorJugador
-    }
-    method potenciaDeAtaque()  
+        yBase = 4
+    } 
 }
 object joe inherits Oponente{
+    override method initialize(){super() poder = 10}
     override method tipo() = "joe"
-    override method potenciaDeAtaque() = 1.5
-    override method probabilidadDeFallar() = 4
+    override method probabilidadDeFallar() = 3
 }
 object rocky inherits Oponente{
+    override method initialize(){super() poder = 20}
     override method tipo() = "rocky"
-    override method potenciaDeAtaque() = 2
     override method probabilidadDeFallar() = 2
 }
 
 object tyson inherits Oponente{
+    override method initialize(){super() poder = 30}
     override method tipo() = "tyson"
-    override method potenciaDeAtaque() = 4
+    //nunca falla los golpes
 }
 
 //Estados
@@ -165,6 +174,11 @@ object cubriendo {
 
 object golpeado {
   method nombre() = "Golpeado"
+  method protege() = true
+}
+
+object golpeadoEspecial {
+  method nombre() = "GolpeadoEspecial"
   method protege() = true
 }
 object victoria {

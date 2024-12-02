@@ -20,6 +20,7 @@ object gestorSonidos {
         musicas.put("pelea", game.sound("mscPelea.ogg"))
         musicas.put("victoria", game.sound("mscVictoria.ogg"))
         musicas.put("derrota", game.sound("mscDerrota.ogg"))
+        musicas.put("comienza", game.sound("mscComienza.ogg"))
 
         // Efectos de sonido
         efectos.put("golpe", "sonGolpe.ogg")
@@ -64,6 +65,7 @@ object gestorSonidos {
 
     method musicaMenu() {self.reproducirMusica("menu")}
     method musicaDificultad() {self.reproducirMusica("dificultad")}
+    method musicaComienzaNivel() {self.reproducirMusica("comienza")}
     method musicaPelea() {self.reproducirMusica("pelea")}
     method musicaVictoria() {self.reproducirMusica("victoria")}
     method musicaDerrota() {self.reproducirMusica("derrota")}
@@ -97,6 +99,16 @@ object imagenMenu inherits Imagen{
 
 object imagenDificultad inherits Imagen{
 	method initialize() {tipo = "MenuDificultad"}
+}
+
+object imagenVersusJoe inherits Imagen{
+	method initialize() {tipo = "PantallaVersusJoe"}
+}
+object imagenVersusRocky inherits Imagen{
+	method initialize() {tipo = "PantallaVersusRocky"}
+}
+object imagenVersusTyson inherits Imagen{
+	method initialize() {tipo = "PantallaVersusTyson"}
 }
 
 object pantallaRing inherits Imagen{

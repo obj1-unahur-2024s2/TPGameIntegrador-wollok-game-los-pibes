@@ -7,10 +7,4 @@ import imagenYSonido.*
 program PunchOut {
 	juego.iniciar()
 	game.start()
-
-    //Seguir variables por consola
-    /*game.onTick(1000, "prueba", {
-        console.println("")
-        }
-    )*/
 }
