@@ -21,6 +21,7 @@ object gestorSonidos {
         musicas.put("victoria", game.sound("mscVictoria.ogg"))
         musicas.put("derrota", game.sound("mscDerrota.ogg"))
         musicas.put("comienza", game.sound("mscComienza.ogg"))
+        musicas.put("final", game.sound("mscFinal.ogg"))
 
         // Efectos de sonido
         efectos.put("golpe", "sonGolpe.ogg")
@@ -32,6 +33,7 @@ object gestorSonidos {
         efectos.put("campanaSimple", "sonCampanaSimple.ogg")
         efectos.put("tribuna", "sonTribuna.ogg")
         efectos.put("alertaEspecial", "sonAlertaEspecial.ogg")
+        efectos.put("tituloRoto", "sonTituloRoto.ogg")
     }
 
     // Método para reproducir música
@@ -69,69 +71,78 @@ object gestorSonidos {
     method musicaPelea() {self.reproducirMusica("pelea")}
     method musicaVictoria() {self.reproducirMusica("victoria")}
     method musicaDerrota() {self.reproducirMusica("derrota")}
+    method musicaFinal() {self.reproducirMusica("final")}
 
 
     method sonidoGolpe() {self.reproducirEfecto("golpe")}
     method sonidoGolpeEspecial() {self.reproducirEfecto("golpeEspecial")}
     method sonidoBloqueo() {self.reproducirEfecto("bloqueo")}
     method sonidoBloqueoEspecial() {self.reproducirEfecto("bloqueoEspecial")}
-    method sonidoEnter() {self.reproducirEfecto("enter")}
+    method sonidoEnter() {self.pararMusica() self.reproducirEfecto("enter")}
     method sonidoCampana() {self.reproducirEfecto("campana")}
     method sonidoCampanaSimple() {self.reproducirEfecto("campanaSimple")}
     method sonidoTribuna() {self.reproducirEfecto("tribuna")}
     method sonidoAlertaEspecial() {self.reproducirEfecto("alertaEspecial")}
+    method sonidoTituloRoto() {self.reproducirEfecto("tituloRoto")}
 }
 
 //IMAGEN
 
-class Imagen {
-    var property tipo = ""
-    var property position = game.at(0, 0)
-    method image() = "imagen" + self.tipo() + ".png" 
+object gestorImagenes {
+    const imagenes = new Dictionary()
+    var imagenActual = "imagenPantallaCarga.png"
+
+    method position() = game.at(0, 0)
+    method image() = imagenActual
+
+    method initialize() {
+        imagenes.put("pantallaCarga", "imagenPantallaCarga.png")
+        imagenes.put("menu", "imagenMenu.png")
+        imagenes.put("menu2", "imagenMenu2.png")
+        imagenes.put("menuDificultad", "imagenMenuDificultad.png")
+        imagenes.put("versusJoe", "imagenPantallaVersusJoe.png")
+        imagenes.put("versusRocky", "imagenPantallaVersusRocky.png")
+        imagenes.put("versusTyson", "imagenPantallaVersusTyson.png")
+        imagenes.put("pantallaDerrota", "imagenPantallaDerrota.png")
+        imagenes.put("pantallaVictoria", "imagenPantallaVictoria.png")
+        imagenes.put("pantallaVictoria2", "imagenPantallaVictoria2.png")
+        imagenes.put("pantallaFinal", "imagenPantallaFinal.png")
+        imagenes.put("ring1", "ring1.png")
+        imagenes.put("ring2", "ring2.png")
+        imagenes.put("ring3", "ring3.png")
+    }
+
+    method mostrarImagen(nombre) {
+        imagenActual = imagenes.get(nombre)
+    }
+
+    method mostrarPantallaCarga() { self.mostrarImagen("pantallaCarga") }
+    method mostrarMenu() { self.mostrarImagen("menu") }
+    method mostrarMenu2() { self.mostrarImagen("menu2") }
+    method mostrarMenuDificultad() { self.mostrarImagen("menuDificultad") }
+    method mostrarVersusJoe() { self.mostrarImagen("versusJoe") }
+    method mostrarVersusRocky() { self.mostrarImagen("versusRocky") }
+    method mostrarVersusTyson() { self.mostrarImagen("versusTyson") }
+    method mostrarRing1() { self.mostrarImagen("ring1") }
+    method mostrarRing2() { self.mostrarImagen("ring2") }
+    method mostrarRing3() { self.mostrarImagen("ring3") }
+    method mostrarPantallaDerrota() { self.mostrarImagen("pantallaDerrota") }
+    method mostrarPantallaVictoria() { self.mostrarImagen("pantallaVictoria") }
+    method mostrarPantallaVictoria2() { self.mostrarImagen("pantallaVictoria2") }
+    method mostrarPantallaFinal() { self.mostrarImagen("pantallaFinal") }
 }
 
-object imagenCarga inherits Imagen{ 
-    method initialize() {tipo = "PantallaCarga"}
-}
-object imagenMenu inherits Imagen{ 
-    method initialize() {tipo = "Menu"}
-}
+object tribunaLoca{
+    method position() = game.at(0, 0)
+    method image() = "imagenTribunaLoca.png" 
 
-object imagenDificultad inherits Imagen{
-	method initialize() {tipo = "MenuDificultad"}
-}
-
-object imagenVersusJoe inherits Imagen{
-	method initialize() {tipo = "PantallaVersusJoe"}
-}
-object imagenVersusRocky inherits Imagen{
-	method initialize() {tipo = "PantallaVersusRocky"}
-}
-object imagenVersusTyson inherits Imagen{
-	method initialize() {tipo = "PantallaVersusTyson"}
-}
-
-object pantallaRing inherits Imagen{
-    override method image() = "ring" + self.tipo() + ".png"
-}
-
-object tribunaLoca inherits Imagen{
     var alocada = false
-    method initialize() {tipo = "TribunaLoca"}
     
     method alocarse() {
         if(alocada || gestorPantallas.pantallaActual() != pantallaNivel) 
         {game.removeVisual(self) alocada = false}
         else {game.addVisual(self) alocada = true}
     }
-}
-
-object imagenDerrota inherits Imagen{
-	method initialize() {tipo = "PantallaDerrota"}
-}
-
-object imagenVictoria inherits Imagen{
-    method initialize() {tipo = "PantallaVictoria"}
 }
 
 object imgAtaqueEspecial{

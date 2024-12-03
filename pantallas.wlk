@@ -3,100 +3,111 @@ import Boxeadores.*
 import imagenYSonido.*
 //Pantallas
 class Pantalla {
-    var property tipo = ""
     method mostrar()
-    method ocultar() {game.removeVisual(self) game.removeVisual(tipo)}
+    method puedoTocarTeclaDeTransicion() = gestorPantallas.pantallaActual() == self && !gestorPantallas.transicionEnProgreso()
 }
 
 object pantallaCarga inherits Pantalla {
-    method initialize() {tipo = imagenCarga}
     override method mostrar() {
-        game.addVisual(tipo)
+        gestorImagenes.mostrarPantallaCarga()
 
         keyboard.enter().onPressDo {
-            if(gestorPantallas.pantallaActual() != self) {self.error("") }
+            if(!self.puedoTocarTeclaDeTransicion()) {self.error("") }
+            gestorPantallas.transicionEnProgreso(true)
             gestorPantallas.mostrarPantalla(pantallaMenu)
         }
     }
 }
 
 object pantallaMenu inherits Pantalla {
-    method initialize() {tipo = imagenMenu}
     override method mostrar() {
-        game.addVisual(tipo)
+        gestorImagenes.mostrarMenu()
         gestorSonidos.musicaMenu()
 
         //Controles de pantalla
         keyboard.enter().onPressDo {
-            if(gestorPantallas.pantallaActual() != self) {self.error("") }
-            gestorSonidos.pararMusica()
+            if(!self.puedoTocarTeclaDeTransicion()) {self.error("") }
+            gestorPantallas.transicionEnProgreso(true)
             gestorSonidos.sonidoEnter()
-            game.schedule(1000, {
+            game.schedule(1200, {self.romperTitulo()})
+        }
+    }
+
+    method romperTitulo() {
+        gestorImagenes.mostrarMenu2()
+        gestorSonidos.sonidoTituloRoto()
+        game.schedule(2000, {
                 gestorPantallas.mostrarPantalla(pantallaDificultad)
             })
-        }
     }
 }
 
 object pantallaDificultad inherits Pantalla {
     var nivelElegido = null
-    var cargandoNivel = false
-
-    method initialize() {tipo = imagenDificultad}
 
     method cargarNivel() {
         gestorSonidos.sonidoEnter()
         game.schedule(1000, {
             pantallaNivel.tipoNivel(nivelElegido)
             gestorPantallas.mostrarPantalla(pantallaNivel)
-            cargandoNivel = false
         })
     }
     override method mostrar() {
-        game.addVisual(tipo)
+        gestorImagenes.mostrarMenuDificultad()
         gestorSonidos.musicaDificultad()
 
         //Controles de pantalla
         keyboard.num1().onPressDo ({
-            if(gestorPantallas.pantallaActual() != self || cargandoNivel) {self.error("") }
-            gestorSonidos.pararMusica()
+            if(!self.puedoTocarTeclaDeTransicion()) {self.error("") }
+            gestorPantallas.transicionEnProgreso(true)
             nivelElegido = nivel1
-            cargandoNivel = true
             self.cargarNivel()
         })
         keyboard.num2().onPressDo ({
-            if(gestorPantallas.pantallaActual() != self || cargandoNivel) {self.error("") }
-            gestorSonidos.pararMusica()
+            if(!self.puedoTocarTeclaDeTransicion()) {self.error("") }
+            gestorPantallas.transicionEnProgreso(true)
             nivelElegido = nivel2
-            cargandoNivel = true
             self.cargarNivel()
         })
         keyboard.num3().onPressDo ({
-            if(gestorPantallas.pantallaActual() != self || cargandoNivel) {self.error("") }
-            gestorSonidos.pararMusica()
+            if(!self.puedoTocarTeclaDeTransicion()) {self.error("") }
+            gestorPantallas.transicionEnProgreso(true)
             nivelElegido = nivel3
-            cargandoNivel = true
             self.cargarNivel()
         })
     }
 }
 
 object pantallaVictoria inherits Pantalla {
-    method initialize() {tipo = imagenVictoria}
+    method todosLosNivelesGanados() = nivel1.estaGanado() && nivel2.estaGanado() && nivel3.estaGanado()
+
     override method mostrar() {
-        game.addVisual(tipo)
         gestorSonidos.musicaVictoria()
 
-        game.schedule(4400, {
-            gestorPantallas.mostrarPantalla(pantallaDificultad)
+        if(self.todosLosNivelesGanados()) {
+            gestorImagenes.mostrarPantallaVictoria2()
+            game.schedule(4400, {gestorPantallas.mostrarPantalla(pantallaFinal)})
+        } else{
+            gestorImagenes.mostrarPantallaVictoria()
+            game.schedule(4400, {gestorPantallas.mostrarPantalla(pantallaDificultad)})
+        }
+    }
+}
+
+object pantallaFinal inherits Pantalla {
+    override method mostrar() {
+        gestorImagenes.mostrarPantallaFinal()
+        gestorSonidos.musicaFinal()
+
+        game.schedule(9000, {
+            gestorSonidos.pararMusica()
         })
     }
 }
 
 object pantallaDerrota inherits Pantalla {
-    method initialize() {tipo = imagenDerrota}
     override method mostrar() {
-        game.addVisual(tipo)
+        gestorImagenes.mostrarPantallaDerrota()
         gestorSonidos.musicaDerrota()
         game.schedule(5000, {
             gestorPantallas.mostrarPantalla(pantallaDificultad)
@@ -111,13 +122,10 @@ object pantallaNivel inherits Pantalla {
     var pantallaFinal = null
     var hayPermisoEspecial = false
 
-    method initialize() {tipo = pantallaRing}
-
     override method mostrar() {
-        const imagenVersus = tipoNivel.imagenVersus()
-        game.addVisual(imagenVersus)
+        tipoNivel.mostrarPantallaVersus()
         gestorSonidos.musicaComienzaNivel()
-        game.schedule(4000, {self.iniciarNivel() game.removeVisual(imagenVersus)}) 
+        game.schedule(4000, {self.iniciarNivel()})
     }
     
     method iniciarNivel() {
@@ -128,7 +136,7 @@ object pantallaNivel inherits Pantalla {
         boxeadorRival.reiniciar()
         mario.reiniciar()
 
-        game.addVisual(tipo)
+        tipoNivel.mostrarRing()
         game.addVisual(boxeadorRival)
         game.addVisual(boxeadorJugador)
         game.addVisual(vidaJugador)
@@ -141,8 +149,6 @@ object pantallaNivel inherits Pantalla {
         vidaOponente.oponente(boxeadorRival)
         game.addVisual(vidaOponente)
 
-        //Especificaciones por nivel
-        tipoNivel.cambiarFondo()
         accionesRival.clear()
         accionesRival.addAll(tipoNivel.accionesRival())
 
@@ -228,6 +234,7 @@ object pantallaNivel inherits Pantalla {
             boxeadorRival.estado(derrota)
             boxeadorRival.position(game.at(6,5))
             pantallaFinal = pantallaVictoria
+            tipoNivel.estaGanado(true)
         } else if (boxeadorJugador.vida() <= 0) {
             boxeadorJugador.estado(derrota)
             boxeadorRival.estado(victoria)
@@ -250,34 +257,36 @@ object pantallaNivel inherits Pantalla {
         game.removeVisual(boxeadorRival)
         game.removeVisual(vidaJugador)
         game.removeVisual(vidaOponente)
-        game.removeVisual(tipo)
         game.removeVisual(tribunaLoca)
     }
 }
 
 object nivel1{
+    var property estaGanado = false
     method rival() = joe
-    method imagenVersus() = imagenVersusJoe
+    method mostrarPantallaVersus() {gestorImagenes.mostrarVersusJoe()}
     method accionesRival() = [new AccionAtacar(probabilidad=35), new AccionCubrirse(probabilidad=25)]
-    method cambiarFondo() {pantallaRing.tipo(1)}
+    method mostrarRing() {gestorImagenes.mostrarRing1()}
     method poderJugador() = 20
     method probabilidadPermisoEspecial() = 30
 }
 
 object nivel2 {
+    var property estaGanado = false
     method rival() = rocky
-    method imagenVersus() = imagenVersusRocky
+    method mostrarPantallaVersus() {gestorImagenes.mostrarVersusRocky()}
     method accionesRival() = [new AccionAtacar(probabilidad=45), new AccionCubrirse(probabilidad=25), new AccionAtacarEspecial(probabilidad=5)]
-    method cambiarFondo() {pantallaRing.tipo(2)}
+    method mostrarRing() {gestorImagenes.mostrarRing2()}
     method poderJugador() = 10
     method probabilidadPermisoEspecial() = 28
 }
 
 object nivel3 {
+    var property estaGanado = false
     method rival() = tyson
-    method imagenVersus() = imagenVersusTyson
+    method mostrarPantallaVersus() {gestorImagenes.mostrarVersusTyson()}
     method accionesRival() = [new AccionAtacar(probabilidad=80), new AccionCubrirse(probabilidad=5), new AccionAtacarEspecial(probabilidad=30)]
-    method cambiarFondo() {pantallaRing.tipo(3)}
+    method mostrarRing() {gestorImagenes.mostrarRing3()}
     method poderJugador() = 5
     method probabilidadPermisoEspecial() = 20
 }
