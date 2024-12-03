@@ -10,7 +10,6 @@ Derrota a Joe, Rocky y Tyson para convertirte en el nuevo campeón mundial
 - Arias, Facundo Roberto
 - Barrionuevo, Lucas Emmanuel
 - Deandrea, Arturo Juan
-- Cáceres, Edgardo Ramón
 
 ## Capturas
 
