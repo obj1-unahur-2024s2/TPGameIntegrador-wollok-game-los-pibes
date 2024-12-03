@@ -29,6 +29,7 @@ object pantallaMenu inherits Pantalla {
         //Controles de pantalla
         keyboard.enter().onPressDo {
             if(gestorPantallas.pantallaActual() != self) {self.error("") }
+            gestorSonidos.pararMusica()
             gestorSonidos.sonidoEnter()
             game.schedule(1000, {
                 gestorPantallas.mostrarPantalla(pantallaDificultad)
@@ -58,18 +59,21 @@ object pantallaDificultad inherits Pantalla {
         //Controles de pantalla
         keyboard.num1().onPressDo ({
             if(gestorPantallas.pantallaActual() != self || cargandoNivel) {self.error("") }
+            gestorSonidos.pararMusica()
             nivelElegido = nivel1
             cargandoNivel = true
             self.cargarNivel()
         })
         keyboard.num2().onPressDo ({
             if(gestorPantallas.pantallaActual() != self || cargandoNivel) {self.error("") }
+            gestorSonidos.pararMusica()
             nivelElegido = nivel2
             cargandoNivel = true
             self.cargarNivel()
         })
         keyboard.num3().onPressDo ({
             if(gestorPantallas.pantallaActual() != self || cargandoNivel) {self.error("") }
+            gestorSonidos.pararMusica()
             nivelElegido = nivel3
             cargandoNivel = true
             self.cargarNivel()
@@ -83,7 +87,7 @@ object pantallaVictoria inherits Pantalla {
         game.addVisual(tipo)
         gestorSonidos.musicaVictoria()
 
-        game.schedule(5000, {
+        game.schedule(4400, {
             gestorPantallas.mostrarPantalla(pantallaDificultad)
         })
     }
